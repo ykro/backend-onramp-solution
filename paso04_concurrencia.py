@@ -1,4 +1,4 @@
-"""Paso 5: Concurrencia y exclusión mutua con `threading.Lock`."""
+"""Paso 4: Concurrencia y exclusión mutua con `threading.Lock`."""
 
 import threading
 import time

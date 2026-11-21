@@ -1,6 +1,6 @@
 # Glosario de Backend Onramp
 
-Este glosario reúne los conceptos clave que aparecen en los 5 pasos de Backend Onramp. Cada entrada explica qué resuelve el concepto y enlaza a su documentación oficial.
+Este glosario reúne los conceptos clave que aparecen en los 5 pasos de Backend Onramp y en las guías del curso principal. Cada entrada explica qué resuelve el concepto y enlaza a su documentación oficial.
 
 ## HTTP status codes
 
@@ -12,7 +12,7 @@ Biblioteca de validación de datos que FastAPI usa para revisar cada petición a
 
 ## `Decimal`
 
-Tipo numérico de la biblioteca estándar de Python para operar en base 10 con exactitud, documentado en [Python `decimal`](https://docs.python.org/3/library/decimal.html). En precios y montos de dinero reemplaza a `float` porque los números en punto flotante binario acumulan errores de redondeo como `0.1 + 0.2 != 0.3`.
+Tipo numérico de la biblioteca estándar de Python para operar en base 10 con exactitud, documentado en [Python `decimal`](https://docs.python.org/3/library/decimal.html). En precios y multas reemplaza a `float` porque los números en punto flotante binario acumulan errores de redondeo como `0.1 + 0.2 != 0.3`.
 
 ## `PRAGMA foreign_keys`
 
@@ -20,7 +20,7 @@ Instrucción de SQLite que activa la verificación de llaves foráneas en la con
 
 ## `INNER JOIN`
 
-Cláusula SQL que combina filas de dos tablas cuando coinciden en una columna relacionada, documentada en [SQLite `SELECT` y `JOIN`](https://www.sqlite.org/lang_select.html#fromclause). En el Paso 3 une `books` con `authors` usando `ON a.id = b.author_id` para devolver cada libro junto con el nombre de su autor en una sola consulta.
+Cláusula SQL que combina filas de dos tablas cuando coinciden en una columna relacionada, documentada en [SQLite `SELECT` y `JOIN`](https://www.sqlite.org/lang_select.html#fromclause). En el Paso 2 une `books` con `authors` usando `ON a.id = b.author_id` para devolver cada libro junto con el nombre de su autor en una sola consulta.
 
 ## `EXPLAIN QUERY PLAN`
 
@@ -40,8 +40,16 @@ Dos códigos HTTP distintos para control de acceso. El servidor devuelve [`401 U
 
 ## Race condition (condición de carrera)
 
-Defecto de concurrencia donde el resultado cambia según el orden en que se intercalan varios hilos que leen y escriben el mismo dato al mismo tiempo. En el Paso 5 aparece cuando cinco hilos consultan si `"sala-a"` está libre antes de que alguno termine de escribir su reserva, logrando reservar la misma sala varias veces.
+Defecto de concurrencia donde el resultado cambia según el orden en que se intercalan varios hilos que leen y escriben el mismo dato al mismo tiempo. En el Paso 4 aparece cuando cinco hilos consultan si `"sala-a"` está libre antes de que alguno termine de escribir su reserva, logrando reservar la misma sala varias veces.
 
 ## `threading.Lock`
 
 Candado de exclusión mutua de la biblioteca estándar de Python, documentado en [Python `threading.Lock`](https://docs.python.org/3/library/threading.html#lock-objects). Al envolver la sección crítica dentro de `with self._lock:`, garantizas que solo un hilo a la vez verifique la disponibilidad y guarde la reserva.
+
+## `pytest` y patrón Arrange -> Act -> Assert
+
+Marco de pruebas automatizadas para Python documentado en [pytest](https://docs.pytest.org/en/stable/) y usado en [FastAPI Testing](https://fastapi.tiangolo.com/tutorial/testing/). Cada función `test_*` prepara los datos de entrada (**Arrange**), ejecuta la función bajo prueba (**Act**) y comprueba el resultado con `assert` (**Assert**). Una buena prueba pasa en verde cuando el código cumple la regla y falla en rojo si aparece un bug.
+
+## ADR (Architecture Decision Record)
+
+Documento corto que registra una decisión de diseño importante junto con su contexto, las alternativas descartadas y sus consecuencias, según [adr.github.io](https://adr.github.io/). Revisa [docs/adr-ejemplo.md](adr-ejemplo.md) para ver cómo se lee un `ARCHITECTURE_DECISIONS.md` antes de entrar al curso principal.

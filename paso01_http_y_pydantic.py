@@ -1,16 +1,18 @@
-"""Paso 1: Contratos HTTP/1.1 (201, 204, 404) y estado aislado por instancia."""
+"""Paso 1: Contratos HTTP/1.1 (201, 204, 404), estado aislado y validación Pydantic."""
 
 from decimal import Decimal
 
 from fastapi import FastAPI, HTTPException, Response, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BookCreate(BaseModel):
     """Datos de entrada para registrar un libro en el catálogo."""
 
-    title: str
-    price: Decimal
+    model_config = ConfigDict(extra="forbid")
+
+    title: str = Field(min_length=1, max_length=120)
+    price: Decimal = Field(gt=Decimal("0"), decimal_places=2)
 
 
 class BookOut(BaseModel):
@@ -22,7 +24,7 @@ class BookOut(BaseModel):
 
 
 def create_app() -> FastAPI:
-    """Crea una aplicación FastAPI con su propio catálogo en memoria."""
+    """Crea una aplicación FastAPI con su propio catálogo en memoria y validación estricta."""
     app = FastAPI(title="Biblioteca Onramp - Paso 1")
     books: dict[int, BookOut] = {}
     next_id = 1

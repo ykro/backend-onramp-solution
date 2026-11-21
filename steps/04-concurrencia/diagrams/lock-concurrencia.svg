@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 920 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="lock-title lock-desc">
-  <title id="lock-title">Paso 5: Condición de carrera vs exclusión mutua con threading.Lock</title>
+  <title id="lock-title">Paso 4: Condición de carrera vs exclusión mutua con threading.Lock</title>
   <desc id="lock-desc">Comparación entre cinco hilos sincronizados con Barrier(5) reservando la misma sala sin bloqueo, que genera múltiples reservas, frente a la sección crítica protegida por with self._lock que garantiza una sola reserva.</desc>
   <defs>
     <marker id="arrow-l" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
@@ -12,7 +12,7 @@
   </defs>
 
   <rect width="920" height="310" rx="12" fill="#F8F7F4"/>
-  <text x="32" y="36" fill="#0F172A" font-size="16" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Paso 5 — Condición de carrera frente a exclusión mutua con threading.Lock</text>
+  <text x="32" y="36" fill="#0F172A" font-size="16" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Paso 4 — Condición de carrera frente a exclusión mutua con threading.Lock</text>
 
   <!-- Fila 1: Sin Lock -->
   <rect x="32" y="56" width="856" height="106" rx="10" fill="#FFFFFF" stroke="#FECACA" stroke-width="1.5"/>

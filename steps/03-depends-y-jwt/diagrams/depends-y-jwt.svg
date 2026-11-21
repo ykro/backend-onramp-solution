@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 920 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="jwt-title jwt-desc">
-  <title id="jwt-title">Paso 4: Depends y flujo de autorización JWT</title>
+  <title id="jwt-title">Paso 3: Depends y flujo de autorización JWT</title>
   <desc id="jwt-desc">Inyección de repositorio con Depends y dependency_overrides, decodificación Base64Url del segmento central de un JWT y separación entre 401 Unauthorized, 403 Forbidden y 201 Created.</desc>
   <defs>
     <marker id="arrow-b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
@@ -12,7 +12,7 @@
   </defs>
 
   <rect width="920" height="330" rx="12" fill="#F8F7F4"/>
-  <text x="32" y="36" fill="#0F172A" font-size="16" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Paso 4 — Inyección con Depends y autorización JWT (401 vs 403)</text>
+  <text x="32" y="36" fill="#0F172A" font-size="16" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Paso 3 — Inyección con Depends y autorización JWT (401 vs 403)</text>
 
   <!-- Bloque Depends -->
   <rect x="32" y="54" width="856" height="82" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>

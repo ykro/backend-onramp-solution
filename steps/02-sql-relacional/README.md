@@ -1,4 +1,4 @@
-# Paso 3. SQLite relacional, JOIN, paginación e índices
+# Paso 2. SQLite relacional, JOIN, paginación e índices
 
 ![Esquema relacional e índice en SQLite](diagrams/esquema-y-indice.svg)
 
@@ -8,7 +8,7 @@ Antes de usar un ORM en el curso principal, necesitas ver cómo responde una bas
 
 ## Qué se construye
 
-Trabajas sobre [paso03_sql_relacional.py](../../paso03_sql_relacional.py) (~18 minutos):
+Trabajas sobre [paso02_sql_relacional.py](../../paso02_sql_relacional.py) (~16 minutos):
 
 - **Llaves foráneas activas en `init_db` (TODO 1):** ejecuta `conn.execute("PRAGMA foreign_keys = ON")` antes de crear las tablas `authors` y `books`.
 - **Consulta con `INNER JOIN` en `list_books_with_authors` (TODO 2):** une `books AS b` con `authors AS a ON a.id = b.author_id`, ordena con `ORDER BY b.id ASC` y devuelve diccionarios con las llaves `id`, `title`, `year` y `author_name`.
@@ -17,16 +17,16 @@ Trabajas sobre [paso03_sql_relacional.py](../../paso03_sql_relacional.py) (~18 m
 
 ## Criterios de aceptación
 
-- `CA-3.1` `init_db(conn)` activa `PRAGMA foreign_keys = ON` y SQLite lanza `sqlite3.IntegrityError` al insertar un libro con un `author_id` inexistente.
-- `CA-3.2` `list_books_with_authors(conn)` devuelve cada libro unido con el nombre de su autor (`id`, `title`, `year`, `author_name`) ordenado por `b.id ASC`.
-- `CA-3.3` `list_books_page(conn, limit, offset, title_filter)` pagina ordenado por `b.title ASC` usando parámetros `?` y trata entradas maliciosas como texto literal sin alterar la tabla `books`.
-- `CA-3.4` `explain_books_by_author(conn, author_id)` reporta `SEARCH` y `USING INDEX` sin `SCAN books`.
+- `CA-2.1` `init_db(conn)` activa `PRAGMA foreign_keys = ON` y SQLite lanza `sqlite3.IntegrityError` al insertar un libro con un `author_id` inexistente.
+- `CA-2.2` `list_books_with_authors(conn)` devuelve cada libro unido con el nombre de su autor (`id`, `title`, `year`, `author_name`) ordenado por `b.id ASC`.
+- `CA-2.3` `list_books_page(conn, limit, offset, title_filter)` pagina ordenado por `b.title ASC` usando parámetros `?` y trata entradas maliciosas como texto literal sin alterar la tabla `books`.
+- `CA-2.4` `explain_books_by_author(conn, author_id)` reporta `SEARCH` y `USING INDEX` sin `SCAN books`.
 
 ## Cómo verificar
 
-Inspecciona el plan de consulta y las llaves foráneas en vivo, y corre las pruebas del Paso 3:
+Inspecciona el plan de consulta y las llaves foráneas en vivo, y corre las pruebas del Paso 2:
 
 ```bash
-uv run onramp inspect --paso 3
-uv run onramp check --paso 3
+uv run onramp inspect --paso 2
+uv run onramp check --paso 2
 ```

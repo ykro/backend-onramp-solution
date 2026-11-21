@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 920 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sql-title sql-desc">
-  <title id="sql-title">Paso 3: Esquema relacional e índice en SQLite</title>
+  <title id="sql-title">Paso 2: Esquema relacional e índice en SQLite</title>
   <desc id="sql-desc">Tablas authors y books relacionadas mediante llave foránea author_id con PRAGMA foreign_keys activado, y comparación entre SCAN books sin índice y SEARCH books USING INDEX idx_books_author_id.</desc>
   <defs>
     <marker id="arrow-fk" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
@@ -9,7 +9,7 @@
   </defs>
 
   <rect width="920" height="350" rx="12" fill="#F8F7F4"/>
-  <text x="32" y="38" fill="#0F172A" font-size="16" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Paso 3 — Esquema relacional en SQLite y efecto del índice</text>
+  <text x="32" y="38" fill="#0F172A" font-size="16" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Paso 2 — Esquema relacional en SQLite y efecto del índice</text>
 
   <!-- Tabla authors -->
   <rect x="32" y="68" width="210" height="122" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>

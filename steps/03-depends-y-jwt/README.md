@@ -1,4 +1,4 @@
-# Paso 4. Inyección con `Depends` y autorización con JWT
+# Paso 3. Inyección con `Depends` y autorización con JWT
 
 ![Inyección con Depends y autorización JWT](diagrams/depends-y-jwt.svg)
 
@@ -8,7 +8,7 @@ Una API fácil de mantener no lee variables globales dentro de sus rutas: declar
 
 ## Qué se construye
 
-Trabajas sobre [paso04_depends_y_jwt.py](../../paso04_depends_y_jwt.py) (~12 minutos):
+Trabajas sobre [paso03_depends_y_jwt.py](../../paso03_depends_y_jwt.py) (~12 minutos):
 
 - **Inyección de dependencias en `GET /rooms` (TODO 1):** recibe `repo: Annotated[RoomRepository, Depends(get_room_repo)]` y retorna `repo.list_rooms()` en lugar de leer `_default_repo` directo.
 - **Decodificación Base64Url en `decode_jwt_payload_unverified` (TODO 2):** separa `token.split(".")`, toma `parts[1]`, agrega el relleno `=` faltante (`"=" * (-len(payload_segment) % 4)`), decodifica con `base64.urlsafe_b64decode(...)` y convierte el JSON con `json.loads(...)`.
@@ -16,15 +16,15 @@ Trabajas sobre [paso04_depends_y_jwt.py](../../paso04_depends_y_jwt.py) (~12 min
 
 ## Criterios de aceptación
 
-- `CA-4.1` Sobrescribir `app.dependency_overrides[get_room_repo]` hace que `GET /rooms` devuelva las salas del repositorio inyectado.
-- `CA-4.2` `decode_jwt_payload_unverified(token)` devuelve el diccionario con `sub` y `role` sin usar `JWT_SECRET`.
-- `CA-4.3` `POST /admin/rooms` responde `401` sin token o con firma inválida, `403` con un token válido de rol `"member"`, y `201` con un token válido de rol `"librarian"`.
+- `CA-3.1` Sobrescribir `app.dependency_overrides[get_room_repo]` hace que `GET /rooms` devuelva las salas del repositorio inyectado.
+- `CA-3.2` `decode_jwt_payload_unverified(token)` devuelve el diccionario con `sub` y `role` sin usar `JWT_SECRET`.
+- `CA-3.3` `POST /admin/rooms` responde `401` sin token o con firma inválida, `403` con un token válido de rol `"member"`, y `201` con un token válido de rol `"librarian"`.
 
 ## Cómo verificar
 
-Observa en vivo el resultado de los tokens y corre las pruebas del Paso 4:
+Observa en vivo el resultado de los tokens y corre las pruebas del Paso 3:
 
 ```bash
-uv run onramp inspect --paso 4
-uv run onramp check --paso 4
+uv run onramp inspect --paso 3
+uv run onramp check --paso 3
 ```

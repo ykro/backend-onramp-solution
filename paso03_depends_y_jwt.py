@@ -1,4 +1,4 @@
-"""Paso 4: Inyección de dependencias con Depends, JWT en Base64Url y 401 vs 403."""
+"""Paso 3: Inyección de dependencias con Depends, JWT en Base64Url y 401 vs 403."""
 
 import base64
 import json
@@ -77,8 +77,8 @@ def _extract_bearer_token(authorization: str | None) -> str:
 
 
 def create_app() -> FastAPI:
-    """Crea la aplicación FastAPI del Paso 4 con Depends y validación de JWT."""
-    app = FastAPI(title="Biblioteca Onramp - Paso 4")
+    """Crea la aplicación FastAPI del Paso 3 con Depends y validación de JWT."""
+    app = FastAPI(title="Biblioteca Onramp - Paso 3")
 
     @app.get("/rooms")
     def list_rooms(
