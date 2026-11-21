@@ -1,9 +1,7 @@
-"""Lab 03: Inyección de dependencias, JWT en Base64Url y protección contra carreras."""
+"""Paso 4: Inyección de dependencias con Depends, JWT en Base64Url y 401 vs 403."""
 
 import base64
 import json
-import threading
-import time
 from typing import Annotated
 
 import jwt
@@ -79,8 +77,8 @@ def _extract_bearer_token(authorization: str | None) -> str:
 
 
 def create_app() -> FastAPI:
-    """Crea la aplicación FastAPI del Lab 03 con Depends y validación de JWT."""
-    app = FastAPI(title="Biblioteca Onramp - Lab 03")
+    """Crea la aplicación FastAPI del Paso 4 con Depends y validación de JWT."""
+    app = FastAPI(title="Biblioteca Onramp - Paso 4")
 
     @app.get("/rooms")
     def list_rooms(
@@ -112,26 +110,3 @@ def create_app() -> FastAPI:
         return repo.add_room(code=payload.code, name=payload.name)
 
     return app
-
-
-class RoomReservationService:
-    """Gestiona reservas exclusivas de salas protegiendo la sección crítica con Lock."""
-
-    def __init__(self) -> None:
-        self._lock = threading.Lock()
-        self._reservations: dict[str, list[str]] = {}
-
-    def reserve(self, room_code: str, user_id: str, delay_seconds: float = 0.01) -> bool:
-        """Reserva una sala solo si sigue libre; devuelve True si ganó el cupo."""
-        with self._lock:
-            if self._reservations.get(room_code):
-                return False
-            if delay_seconds > 0:
-                time.sleep(delay_seconds)
-            self._reservations.setdefault(room_code, []).append(user_id)
-            return True
-
-    def reservation_count(self, room_code: str) -> int:
-        """Devuelve cuántas reservas quedaron registradas para la sala."""
-        with self._lock:
-            return len(self._reservations.get(room_code, []))

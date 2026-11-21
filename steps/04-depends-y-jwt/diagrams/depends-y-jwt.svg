@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 920 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="jwt-title jwt-desc">
+  <title id="jwt-title">Paso 4: Depends y flujo de autorización JWT</title>
+  <desc id="jwt-desc">Inyección de repositorio con Depends y dependency_overrides, decodificación Base64Url del segmento central de un JWT y separación entre 401 Unauthorized, 403 Forbidden y 201 Created.</desc>
+  <defs>
+    <marker id="arrow-b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-s" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <rect width="920" height="330" rx="12" fill="#F8F7F4"/>
+  <text x="32" y="36" fill="#0F172A" font-size="16" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Paso 4 — Inyección con Depends y autorización JWT (401 vs 403)</text>
+
+  <!-- Bloque Depends -->
+  <rect x="32" y="54" width="856" height="82" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="50" y="78" fill="#1D4ED8" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">1. GET /rooms → repo: Annotated[RoomRepository, Depends(get_room_repo)]</text>
+  <text x="50" y="102" fill="#475569" font-size="11.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">En ejecución normal usa _default_repo; en pruebas, app.dependency_overrides[get_room_repo] inyecta un repositorio aislado.</text>
+  <text x="50" y="122" fill="#64748B" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">JWT: header.payload.signature  (payload = Base64Url legible sin clave secreta)</text>
+
+  <!-- Bloque JWT -->
+  <rect x="32" y="152" width="856" height="154" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="50" y="176" fill="#1D4ED8" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">2. POST /admin/rooms (Authorization: Bearer &lt;JWT&gt;)</text>
+
+  <rect x="50" y="196" width="178" height="84" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.2"/>
+  <text x="139" y="222" fill="#0F172A" font-size="12" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" text-anchor="middle">Verificar firma JWT</text>
+  <text x="139" y="242" fill="#475569" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">HS256 + JWT_SECRET</text>
+  <text x="139" y="262" fill="#64748B" font-size="10.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" text-anchor="middle">jwt.decode(token, ...)</text>
+
+  <!-- 401 -->
+  <line x1="232" y1="216" x2="292" y2="206" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-s)"/>
+  <rect x="298" y="186" width="184" height="44" rx="8" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.2"/>
+  <text x="312" y="205" fill="#991B1B" font-size="11.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">401 Unauthorized</text>
+  <text x="312" y="221" fill="#B91C1C" font-size="10.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Sin token o firma inválida</text>
+
+  <!-- Revisar rol -->
+  <line x1="232" y1="256" x2="292" y2="262" stroke="#2563EB" stroke-width="1.8" marker-end="url(#arrow-b)"/>
+  <rect x="298" y="242" width="184" height="44" rx="8" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.2"/>
+  <text x="390" y="261" fill="#1E40AF" font-size="11.5" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" text-anchor="middle">Token válido: revisar rol</text>
+  <text x="390" y="277" fill="#1D4ED8" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">claims["role"] == "librarian"</text>
+
+  <!-- 403 -->
+  <line x1="486" y1="250" x2="564" y2="216" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-s)"/>
+  <rect x="570" y="186" width="296" height="44" rx="8" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1.2"/>
+  <text x="586" y="205" fill="#92400E" font-size="11.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">403 Forbidden (role = "member")</text>
+  <text x="586" y="221" fill="#B45309" font-size="10.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Identidad válida, sin permiso</text>
+
+  <!-- 201 -->
+  <line x1="486" y1="268" x2="564" y2="268" stroke="#2563EB" stroke-width="1.8" marker-end="url(#arrow-b)"/>
+  <rect x="570" y="242" width="296" height="44" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1.2"/>
+  <text x="586" y="261" fill="#065F46" font-size="11.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">201 Created (role = "librarian")</text>
+  <text x="586" y="277" fill="#047857" font-size="10.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Crea la sala en el repositorio inyectado</text>
+</svg>

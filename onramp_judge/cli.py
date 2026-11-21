@@ -13,15 +13,15 @@ from onramp_judge.helpers import (
 )
 
 
-def _inspect_lab01() -> None:
+def _inspect_paso01() -> None:
     from fastapi.testclient import TestClient
 
-    import lab01_http_y_servidor as lab01
+    import paso01_http_contratos as paso01
 
-    print("=== LAB 01: HTTP, Pydantic y estado aislado ===")
+    print("=== PASO 1: Contratos HTTP/1.1 (201, 204, 404) y estado aislado ===")
     try:
-        app_a = lab01.create_app()
-        app_b = lab01.create_app()
+        app_a = paso01.create_app()
+        app_b = paso01.create_app()
         client_a = TestClient(app_a)
         client_b = TestClient(app_b)
 
@@ -33,20 +33,6 @@ def _inspect_lab01() -> None:
                 res_create.status_code,
                 res_create.headers.get("content-type"),
                 res_create.content,
-            )
-        )
-
-        res_extra = client_a.post(
-            "/books",
-            json={"title": "Extra", "price": "50.00", "campo_inventado": True},
-        )
-        print(
-            format_http_exchange(
-                "POST",
-                "/books (con campo extra)",
-                res_extra.status_code,
-                res_extra.headers.get("content-type"),
-                res_extra.content,
             )
         )
 
@@ -75,60 +61,101 @@ def _inspect_lab01() -> None:
         res_isolated = client_b.get("/books")
         print(f"  Libros visibles en una segunda instancia (app_b): {res_isolated.text}")
     except Exception as exc:
-        print(f"  Error al inspeccionar Lab 01: {type(exc).__name__}: {exc}")
+        print(f"  Error al inspeccionar Paso 1: {type(exc).__name__}: {exc}")
     print()
 
 
-def _inspect_lab02() -> None:
-    import lab02_sql_relacional as lab02
+def _inspect_paso02() -> None:
+    from fastapi.testclient import TestClient
 
-    print("=== LAB 02: SQLite relacional, JOIN, paginación y EXPLAIN QUERY PLAN ===")
+    import paso02_validacion_pydantic as paso02
+
+    print("=== PASO 2: Validación estricta con Pydantic, extra='forbid' y Decimal ===")
+    try:
+        client = TestClient(paso02.create_app())
+
+        res_extra = client.post(
+            "/books",
+            json={"title": "Extra", "price": "50.00", "campo_inventado": True},
+        )
+        print(
+            format_http_exchange(
+                "POST",
+                "/books (con campo extra)",
+                res_extra.status_code,
+                res_extra.headers.get("content-type"),
+                res_extra.content,
+            )
+        )
+
+        res_negative = client.post("/books", json={"title": "", "price": "-5.00"})
+        print(
+            format_http_exchange(
+                "POST",
+                "/books (título vacío y precio negativo)",
+                res_negative.status_code,
+                res_negative.headers.get("content-type"),
+                res_negative.content,
+            )
+        )
+
+        price_type = paso02.BookCreate.model_fields["price"].annotation
+        print(f"  Tipo actual de BookCreate.price: {price_type}")
+    except Exception as exc:
+        print(f"  Error al inspeccionar Paso 2: {type(exc).__name__}: {exc}")
+    print()
+
+
+def _inspect_paso03() -> None:
+    import paso03_sql_relacional as paso03
+
+    print("=== PASO 3: SQLite relacional, JOIN, paginación y EXPLAIN QUERY PLAN ===")
     conn = sqlite3.connect(":memory:")
     try:
-        lab02.init_db(conn)
-        author_id = lab02.add_author(conn, "Miguel Ángel Asturias")
-        lab02.add_book(conn, "El Señor Presidente", 1946, author_id)
-        lab02.add_book(conn, "Hombres de Maíz", 1949, author_id)
+        paso03.init_db(conn)
+        author_id = paso03.add_author(conn, "Miguel Ángel Asturias")
+        paso03.add_book(conn, "El Señor Presidente", 1946, author_id)
+        paso03.add_book(conn, "Hombres de Maíz", 1949, author_id)
 
         try:
-            lab02.add_book(conn, "Libro huérfano", 2020, 9999)
+            paso03.add_book(conn, "Libro huérfano", 2020, 9999)
             print("  Llave foránea: PENDIENTE (SQLite permitió un author_id inexistente)")
         except sqlite3.IntegrityError:
             print("  Llave foránea: OK (SQLite rechazó el author_id inexistente)")
 
-        joined = lab02.list_books_with_authors(conn)
+        joined = paso03.list_books_with_authors(conn)
         print(f"  Resultado de INNER JOIN: {joined}")
 
-        page = lab02.list_books_page(conn, limit=1, offset=1)
+        page = paso03.list_books_page(conn, limit=1, offset=1)
         print(f"  Resultado de paginación (limit=1, offset=1): {page}")
 
-        plan = lab02.explain_books_by_author(conn, author_id)
+        plan = paso03.explain_books_by_author(conn, author_id)
         print("  Plan de consulta para WHERE author_id = ?:")
         print(format_query_plan(plan))
     except Exception as exc:
-        print(f"  Error al inspeccionar Lab 02: {type(exc).__name__}: {exc}")
+        print(f"  Error al inspeccionar Paso 3: {type(exc).__name__}: {exc}")
     finally:
         conn.close()
     print()
 
 
-def _inspect_lab03() -> None:
+def _inspect_paso04() -> None:
     from fastapi.testclient import TestClient
 
-    import lab03_di_jwt_y_carrera as lab03
+    import paso04_depends_y_jwt as paso04
 
-    print("=== LAB 03: Depends, JWT en Base64Url y concurrencia con Barrier(5) ===")
+    print("=== PASO 4: Depends, dependency_overrides, JWT en Base64Url y 401 vs 403 ===")
     try:
-        member_token = lab03.create_access_token("ana", "member")
-        librarian_token = lab03.create_access_token("carlos", "librarian")
+        member_token = paso04.create_access_token("ana", "member")
+        librarian_token = paso04.create_access_token("carlos", "librarian")
         print(f"  Token de ejemplo (member): {member_token[:36]}...")
         try:
-            decoded = lab03.decode_jwt_payload_unverified(member_token)
+            decoded = paso04.decode_jwt_payload_unverified(member_token)
             print(f"  Payload decodificado sin clave secreta: {decoded}")
         except Exception as exc:
             print(f"  Decodificación Base64Url pendiente: {type(exc).__name__}: {exc}")
 
-        app = lab03.create_app()
+        app = paso04.create_app()
         client = TestClient(app)
         res_no_token = client.post("/admin/rooms", json={"code": "sala-b", "name": "Sala B"})
         res_member = client.post(
@@ -145,8 +172,17 @@ def _inspect_lab03() -> None:
             f"  POST /admin/rooms -> sin token: {res_no_token.status_code}, "
             f"rol member: {res_member.status_code}, rol librarian: {res_librarian.status_code}"
         )
+    except Exception as exc:
+        print(f"  Error al inspeccionar Paso 4: {type(exc).__name__}: {exc}")
+    print()
 
-        service = lab03.RoomReservationService()
+
+def _inspect_paso05() -> None:
+    import paso05_concurrencia as paso05
+
+    print("=== PASO 5: Concurrencia con Barrier(5) y exclusión mutua con Lock ===")
+    try:
+        service = paso05.RoomReservationService()
         successes, stored = run_concurrent_bookings(service, "sala-a", threads=5)
         status_msg = (
             "OK (Lock protegió la reserva)"
@@ -158,28 +194,39 @@ def _inspect_lab03() -> None:
             f"{successes} confirmaciones, {stored} registros -> {status_msg}"
         )
     except Exception as exc:
-        print(f"  Error al inspeccionar Lab 03: {type(exc).__name__}: {exc}")
+        print(f"  Error al inspeccionar Paso 5: {type(exc).__name__}: {exc}")
     print()
 
 
-def run_inspect() -> int:
-    """Ejecuta la inspección en vivo de los 3 ejercicios sin detenerse por errores."""
+_INSPECTORS = {
+    1: _inspect_paso01,
+    2: _inspect_paso02,
+    3: _inspect_paso03,
+    4: _inspect_paso04,
+    5: _inspect_paso05,
+}
+
+
+def run_inspect(paso: int | None = None) -> int:
+    """Ejecuta la inspección en vivo de todos los pasos o de uno específico."""
     warnings.filterwarnings(
         "ignore",
         message="Using `httpx` with `starlette.testclient` is deprecated",
     )
-    _inspect_lab01()
-    _inspect_lab02()
-    _inspect_lab03()
+    if paso is not None:
+        _INSPECTORS[paso]()
+        return 0
+    for step_number in sorted(_INSPECTORS):
+        _INSPECTORS[step_number]()
     return 0
 
 
-def run_check() -> int:
-    """Ejecuta la suite de 12 pruebas deterministas con pytest."""
-    completed = subprocess.run(
-        [sys.executable, "-m", "pytest", "-v", "--tb=short", "tests/test_onramp.py"],
-        check=False,
-    )
+def run_check(paso: int | None = None) -> int:
+    """Ejecuta las 15 pruebas deterministas o las pruebas de un paso específico."""
+    cmd = [sys.executable, "-m", "pytest", "-v", "--tb=short", "tests/test_onramp.py"]
+    if paso is not None:
+        cmd.extend(["-k", f"paso0{paso}"])
+    completed = subprocess.run(cmd, check=False)
     return int(completed.returncode)
 
 
@@ -190,14 +237,36 @@ def main(argv: list[str] | None = None) -> int:
         description="Inspector y verificador de ejercicios de Backend Onramp.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("inspect", help="Muestra en vivo respuestas HTTP, SQL y concurrencia.")
-    subparsers.add_parser("check", help="Corre las 12 pruebas para verificar tus avances.")
+
+    inspect_parser = subparsers.add_parser(
+        "inspect",
+        help="Muestra en vivo respuestas HTTP, Pydantic, SQL, JWT y concurrencia.",
+    )
+    inspect_parser.add_argument(
+        "--paso",
+        type=int,
+        choices=[1, 2, 3, 4, 5],
+        default=None,
+        help="Inspecciona únicamente un paso (1 a 5).",
+    )
+
+    check_parser = subparsers.add_parser(
+        "check",
+        help="Corre las pruebas deterministas para verificar tus avances.",
+    )
+    check_parser.add_argument(
+        "--paso",
+        type=int,
+        choices=[1, 2, 3, 4, 5],
+        default=None,
+        help="Verifica únicamente un paso (1 a 5).",
+    )
 
     args = parser.parse_args(argv)
     if args.command == "inspect":
-        return run_inspect()
+        return run_inspect(paso=args.paso)
     if args.command == "check":
-        return run_check()
+        return run_check(paso=args.paso)
     return 1
 
 

@@ -1,4 +1,4 @@
-"""Lab 02: Base de datos relacional en SQLite puro, JOIN, paginación e índices."""
+"""Paso 3: Base de datos relacional en SQLite puro, JOIN, paginación e índices."""
 
 import sqlite3
 

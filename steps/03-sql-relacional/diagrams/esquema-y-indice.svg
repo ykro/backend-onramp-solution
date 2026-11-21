@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 920 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sql-title sql-desc">
+  <title id="sql-title">Paso 3: Esquema relacional e índice en SQLite</title>
+  <desc id="sql-desc">Tablas authors y books relacionadas mediante llave foránea author_id con PRAGMA foreign_keys activado, y comparación entre SCAN books sin índice y SEARCH books USING INDEX idx_books_author_id.</desc>
+  <defs>
+    <marker id="arrow-fk" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#2563EB"/>
+    </marker>
+  </defs>
+
+  <rect width="920" height="350" rx="12" fill="#F8F7F4"/>
+  <text x="32" y="38" fill="#0F172A" font-size="16" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Paso 3 — Esquema relacional en SQLite y efecto del índice</text>
+
+  <!-- Tabla authors -->
+  <rect x="32" y="68" width="210" height="122" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="32" y="68" width="210" height="34" rx="8" fill="#EFF6FF" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="137" y="90" fill="#1D4ED8" font-size="13" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">authors</text>
+  <text x="48" y="128" fill="#0F172A" font-size="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">PK  id    INTEGER</text>
+  <text x="48" y="152" fill="#475569" font-size="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">    name  TEXT NOT NULL</text>
+
+  <!-- Flecha FK -->
+  <line x1="322" y1="176" x2="246" y2="124" stroke="#2563EB" stroke-width="1.8" marker-end="url(#arrow-fk)"/>
+  <text x="284" y="114" fill="#2563EB" font-size="10" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">1 : N</text>
+
+  <!-- Tabla books -->
+  <rect x="322" y="68" width="268" height="148" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="322" y="68" width="268" height="34" rx="8" fill="#EFF6FF" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="456" y="90" fill="#1D4ED8" font-size="13" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">books</text>
+  <text x="338" y="126" fill="#0F172A" font-size="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">PK  id         INTEGER</text>
+  <text x="338" y="148" fill="#475569" font-size="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">    title      TEXT NOT NULL</text>
+  <text x="338" y="170" fill="#475569" font-size="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">    year       INTEGER NOT NULL</text>
+  <text x="338" y="192" fill="#1D4ED8" font-size="12" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">FK  author_id  INTEGER (indexado)</text>
+
+  <!-- Nota PRAGMA -->
+  <rect x="32" y="236" width="558" height="82" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+  <text x="48" y="260" fill="#0F172A" font-size="12" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Integridad y consultas parametrizadas</text>
+  <text x="48" y="282" fill="#475569" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">PRAGMA foreign_keys = ON  → rechaza author_id inexistente (IntegrityError)</text>
+  <text x="48" y="302" fill="#475569" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">WHERE b.title LIKE ? ORDER BY b.title ASC LIMIT ? OFFSET ?</text>
+
+  <!-- Comparación EXPLAIN QUERY PLAN -->
+  <rect x="616" y="68" width="272" height="250" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="634" y="96" fill="#0F172A" font-size="13" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">EXPLAIN QUERY PLAN</text>
+  <text x="634" y="114" fill="#64748B" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">WHERE author_id = ?</text>
+
+  <!-- Sin índice -->
+  <rect x="634" y="130" width="236" height="76" rx="8" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.2"/>
+  <text x="648" y="152" fill="#991B1B" font-size="11.5" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Sin índice</text>
+  <text x="648" y="172" fill="#B91C1C" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">SCAN books</text>
+  <text x="648" y="192" fill="#7F1D1D" font-size="11" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Recorre toda la tabla fila por fila</text>
+
+  <!-- Con índice -->
+  <rect x="634" y="220" width="236" height="82" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1.2"/>
+  <text x="648" y="242" fill="#065F46" font-size="11.5" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Con idx_books_author_id</text>
+  <text x="648" y="262" fill="#047857" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">SEARCH books USING INDEX</text>
+  <text x="648" y="278" fill="#047857" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">idx_books_author_id</text>
+  <text x="648" y="294" fill="#065F46" font-size="10.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Salto directo por llave de índice</text>
+</svg>
