@@ -53,3 +53,7 @@ Marco de pruebas automatizadas para Python documentado en [pytest](https://docs.
 ## ADR (Architecture Decision Record)
 
 Documento corto que registra una decisión de diseño importante junto con su contexto, las alternativas descartadas y sus consecuencias, según [adr.github.io](https://adr.github.io/). Revisa [docs/adr-ejemplo.md](adr-ejemplo.md) para ver cómo se lee un `ARCHITECTURE_DECISIONS.md` antes de entrar al curso principal.
+
+## CI (Integración Continua)
+
+Práctica de ejecutar automáticamente las pruebas y verificaciones de estilo en una máquina limpia cada vez que subes cambios con `git push` o abres un Pull Request, usando herramientas como [GitHub Actions](https://docs.github.com/es/actions/about-github-actions/understanding-github-actions). Revisa la guía visual en [docs/ci.md](ci.md).

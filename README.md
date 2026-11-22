@@ -32,7 +32,7 @@ Si vienes del [repositorio del problema](https://github.com/ykro/backend-onramp)
 2. Inspecciona todos los pasos o uno específico con `uv run onramp inspect` o `uv run onramp inspect --paso N`.
 3. Verifica todas las pruebas o un paso específico con `uv run onramp check` o `uv run onramp check --paso N`.
 
-Consulta el [glosario con documentación oficial](docs/glosario.md) y la guía corta [Cómo leer un ADR](docs/adr-ejemplo.md) para repasar conceptos del curso principal. Al igual que en el repositorio inicial, [AGENTS.md](AGENTS.md) mantiene el modo tutor socrático por si usas un asistente de IA para revisar la solución.
+Consulta el [glosario con documentación oficial](docs/glosario.md) , la guía corta [Cómo leer un ADR](docs/adr-ejemplo.md) y [Qué es la Integración Continua (CI)](docs/ci.md) para repasar conceptos del curso principal. Al igual que en el repositorio inicial, [AGENTS.md](AGENTS.md) mantiene el modo tutor socrático por si usas un asistente de IA para revisar la solución.
 
 ## Repositorios relacionados
 
