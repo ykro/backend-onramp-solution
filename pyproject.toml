@@ -1,7 +1,7 @@
 [project]
 name = "backend-onramp"
 version = "0.1.0"
-description = "On-ramp de nivelación (unas 3.5 horas) antes del Curso 1 de Backend con FastAPI."
+description = "On-ramp de nivelación (unas cuatro horas) antes del Curso 1 de Backend con FastAPI."
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [

@@ -18,7 +18,7 @@ Un servidor web atiende varios requests al mismo tiempo. Cuando dos de ellos lee
 
 - **Leer.** Corre `uv run onramp inspect --paso 4` varias veces. Cinco hilos arrancan juntos gracias a `threading.Barrier(5)` e intentan reservar la misma sala.
 - **Debuguear.** En [paso04_concurrencia.py](../../paso04_concurrencia.py), marca las líneas que van desde que un hilo revisa la sala hasta que guarda la reserva. El `time.sleep` simula una base de datos lenta y hace visible el problema.
-- **Escribir.** Protege esa sección para que solo un hilo a la vez la ejecute, y protege también la lectura en `reservation_count`.
+- **Escribir.** Protege esa sección para que solo un hilo a la vez la ejecute.
 
 ## Criterios de aceptación
 

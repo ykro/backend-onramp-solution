@@ -212,11 +212,12 @@ def _inspect_paso05() -> None:
     print("=== PASO 5: Pruebas automatizadas desde cero con pytest ===")
     try:
         print("  days_late | correcta | versión A | versión B")
-        for days in (5, 4, 2, 1, 0, -1, -3):
+        for days in (5, 2):
             healthy = paso05.calculate_late_fee(days)
             a = VERSIONES["version_a"](days)
             b = VERSIONES["version_b"](days)
             print(f"  {days:>9} | {healthy!s:>8} | {a!s:>9} | {b!s:>9}")
+        print("  La versión A coincide en estas filas; busca tú dónde falla.")
         completed = subprocess.run(
             [sys.executable, "-m", "pytest", "-q", "tests/test_paso05_estudiante.py"],
             check=False,

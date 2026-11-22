@@ -16,7 +16,7 @@ La **Integración Continua (CI)** elimina esa duda. Cada vez que haces `git push
 2. **Subes tus cambios:** haces `git add`, `git commit` y `git push` a GitHub.
 3. **Corre el CI automáticamente:** GitHub lee `.github/workflows/ci.yml`, levanta una máquina Ubuntu nueva y ejecuta los mismos comandos sin depender de nada que tengas instalado en tu laptop.
 4. **Lectura del resultado:**
-   - **Verde (PASS):** el código compila, cumple las reglas de estilo y pasa las pruebas públicas en un entorno limpio.
+   - **Verde (PASS):** el código compila, cumple las reglas de estilo y pasa las pruebas en un entorno limpio.
    - **Rojo (FAIL):** algo falló. Abres la pestaña **Actions** en GitHub, haces clic en el paso rojo y lees el mensaje de error para corregirlo antes de entregar o hacer merge.
 
 ## Cómo se ve un archivo de CI en Python y FastAPI

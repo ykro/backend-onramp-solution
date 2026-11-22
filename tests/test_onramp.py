@@ -4,9 +4,11 @@ import ast
 import sqlite3
 import subprocess
 import sys
+import time
 from decimal import Decimal
 from pathlib import Path
 
+import jwt as pyjwt
 import pytest
 from fastapi.testclient import TestClient
 
@@ -98,6 +100,7 @@ def test_paso01_rejects_empty_title_and_invalid_price_with_422() -> None:
 
     empty_title = client.post("/books", json={"title": "", "price": "25.00"})
     assert empty_title.status_code == 422
+    assert client.post("/books", json={"title": "x" * 121, "price": "25.00"}).status_code == 422
 
     negative_price = client.post("/books", json={"title": "Precio inválido", "price": "-5.00"})
     assert negative_price.status_code == 422
@@ -137,15 +140,34 @@ def test_paso02_insert_and_inner_join() -> None:
         paso02.init_db(conn)
         author_id = paso02.add_author(conn, "Miguel Ángel Asturias")
         book_id = paso02.add_book(conn, "El Señor Presidente", 1946, author_id)
+        other_id = paso02.add_author(conn, "Augusto Monterroso")
+        other_book_id = paso02.add_book(conn, "La oveja negra", 1969, other_id)
 
+        selects: list[str] = []
+        conn.set_trace_callback(
+            lambda sql: selects.append(sql) if sql.lstrip().upper().startswith("SELECT") else None
+        )
         rows = paso02.list_books_with_authors(conn)
-        assert len(rows) == 1
-        assert rows[0] == {
-            "id": book_id,
-            "title": "El Señor Presidente",
-            "year": 1946,
-            "author_name": "Miguel Ángel Asturias",
-        }
+        conn.set_trace_callback(None)
+
+        assert rows == [
+            {
+                "id": book_id,
+                "title": "El Señor Presidente",
+                "year": 1946,
+                "author_name": "Miguel Ángel Asturias",
+            },
+            {
+                "id": other_book_id,
+                "title": "La oveja negra",
+                "year": 1969,
+                "author_name": "Augusto Monterroso",
+            },
+        ]
+        assert len(selects) == 1, (
+            f"CA-2.2: list_books_with_authors hizo {len(selects)} consultas SELECT; "
+            "un JOIN trae libros y autores en una sola."
+        )
     finally:
         conn.close()
 
@@ -158,9 +180,14 @@ def test_paso02_pagination_with_order_limit_offset_and_params() -> None:
         paso02.add_book(conn, "Obras completas", 1959, author_id)
         paso02.add_book(conn, "La oveja negra", 1969, author_id)
         paso02.add_book(conn, "Lo demás es silencio", 1978, author_id)
+        other_id = paso02.add_author(conn, "Miguel Ángel Asturias")
+        paso02.add_book(conn, "Hombres de maíz", 1949, other_id)
 
         page = paso02.list_books_page(conn, limit=2, offset=1)
-        assert [row["title"] for row in page] == ["Lo demás es silencio", "Obras completas"]
+        assert [row["title"] for row in page] == ["La oveja negra", "Lo demás es silencio"]
+
+        found = paso02.list_books_page(conn, 5, 0, "oveja")
+        assert [row["title"] for row in found] == ["La oveja negra"]
 
         # Un texto malicioso debe tratarse como valor, nunca como instrucción SQL.
         injected = paso02.list_books_page(
@@ -170,7 +197,7 @@ def test_paso02_pagination_with_order_limit_offset_and_params() -> None:
             title_filter="'; DROP TABLE books; --",
         )
         assert injected == []
-        assert len(paso02.list_books_with_authors(conn)) == 3
+        assert len(paso02.list_books_with_authors(conn)) == 4
     finally:
         conn.close()
 
@@ -206,7 +233,8 @@ def test_paso03_dependency_overrides_isolates_tests() -> None:
 
 
 def test_paso03_decode_jwt_payload_without_secret() -> None:
-    token = paso03.create_access_token(subject="maria", role="member")
+    # Firmado con otra clave: si la función verifica con JWT_SECRET, falla.
+    token = pyjwt.encode({"sub": "maria", "role": "member"}, "otra-clave-de-otro-servidor-32-bytes!", algorithm="HS256")
     payload = paso03.decode_jwt_payload_unverified(token)
     assert payload["sub"] == "maria"
     assert payload["role"] == "member"
@@ -251,7 +279,9 @@ def test_paso03_auth_separates_401_and_403() -> None:
 
 def test_paso04_concurrent_booking_protected_with_lock() -> None:
     service = paso04.RoomReservationService()
-    successes, stored = run_concurrent_bookings(service, "sala-a", threads=5, delay_seconds=0.01)
+    inicio = time.perf_counter()
+    successes, stored = run_concurrent_bookings(service, "sala-a", threads=5, delay_seconds=0.1)
+    assert time.perf_counter() - inicio >= 0.1, "No borres el time.sleep: simula la base de datos lenta."
     assert successes == 1
     assert stored == 1
 
@@ -334,7 +364,8 @@ def test_paso05_student_tests_pass_on_healthy_function() -> None:
         f"Estos no lo hacen: {', '.join(debiles)}."
     )
     healthy = _run_student_suite(None)
-    assert healthy.returncode == 0, (
+    ok = healthy.returncode == 0
+    assert ok, (
         "Tus pruebas en tests/test_paso05_estudiante.py deben pasar con calculate_late_fee:\n"
         f"{healthy.stdout}\n{healthy.stderr}"
     )
@@ -342,16 +373,17 @@ def test_paso05_student_tests_pass_on_healthy_function() -> None:
 
 @pytest.mark.parametrize("version", ["version_a", "version_b"])
 def test_paso05_student_tests_fail_on_each_buggy_version(version: str) -> None:
-    healthy = _run_student_suite(None)
-    assert healthy.returncode == 0, (
+    ok = _run_student_suite(None).returncode == 0
+    assert ok, (
         "Primero haz que tus pruebas pasen con la función correcta calculate_late_fee."
     )
 
     buggy = _run_student_suite(version)
-    assert buggy.returncode == 1, (
+    detecta = buggy.returncode == 1
+    assert detecta, (
         f"Con la {version.replace('_', ' ')} en lugar de calculate_late_fee, todas tus pruebas "
-        "siguen en verde, así que no detectan ese bug. Compara las dos con "
-        "`uv run onramp inspect --paso 5` y agrega un caso donde den resultados distintos.\n"
+        "siguen en verde, así que no detectan ese bug. Abre la pista 1 del Paso 5 "
+        "y agrega un caso donde den resultados distintos.\n"
         f"{buggy.stdout}\n{buggy.stderr}"
     )
 

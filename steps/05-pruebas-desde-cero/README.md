@@ -12,7 +12,7 @@ Este paso toma unos 30 minutos.
 
 ## Por qué importa
 
-En el curso escribirás tus propios tests y la nota toma en cuenta si detectan errores reales. Un buen test sigue el patrón Arrange, Act, Assert (preparar datos, ejecutar, comprobar) y cumple dos condiciones, pasa en verde con el código correcto y se pone en rojo cuando aparece un bug. Un solo caso casi nunca basta, porque cada bug se esconde en un lugar distinto. Este paso usa [pytest](https://docs.pytest.org/en/stable/getting-started.html).
+En el curso tus tests tienen que detectar errores reales. Un buen test sigue el patrón Arrange, Act, Assert (preparar datos, ejecutar, comprobar) y cumple dos condiciones, pasa en verde con el código correcto y se pone en rojo cuando aparece un bug. Un solo caso casi nunca basta, porque cada bug se esconde en un lugar distinto. Este paso usa [pytest](https://docs.pytest.org/en/stable/getting-started.html).
 
 ## Qué vas a hacer
 

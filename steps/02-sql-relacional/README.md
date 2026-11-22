@@ -2,7 +2,7 @@
 
 ![Paso 2. Tu primera base de datos relacional con SQLite](diagrams/esquema-y-indice.svg)
 
-Este paso toma unos 50 minutos.
+Este paso toma unos 60 minutos.
 
 ## Antes de empezar
 
@@ -12,17 +12,18 @@ Este paso toma unos 50 minutos.
 
 ## Por qué importa
 
-En la Unidad 2 del curso trabajarás con SQLModel, un ORM (una librería que convierte clases de Python en tablas y genera el SQL por ti), sobre una base de datos real. Antes de usarlo conviene ver qué hace la base de datos por debajo, con [sqlite3](https://docs.python.org/3/library/sqlite3.html), que ya viene con Python y no necesita instalar nada. En este paso ves cuatro ideas que el ORM da por sabidas, la llave foránea, el `JOIN`, la paginación con parámetros y el índice.
+En la Unidad 2 del curso trabajarás con SQLModel, un ORM (una librería que convierte clases de Python en tablas y genera el SQL por ti), sobre una base de datos real. Antes de usarlo conviene ver qué hace la base de datos por debajo, con [sqlite3](https://docs.python.org/3/library/sqlite3.html), que ya viene con Python y no necesita instalar nada.
 
 ## Lo mínimo que necesitas saber
 
 - **Tabla, fila y columna.** Una tabla es como una lista de registros con la misma forma. Cada fila es un registro y cada columna un campo con tipo (`INTEGER`, `TEXT`).
 - **Llave primaria (`PRIMARY KEY`).** Identifica cada fila de forma única, como el `id` de un libro.
 - **Llave foránea (`FOREIGN KEY`).** Una columna que apunta a la llave primaria de otra tabla, como `books.author_id` hacia `authors.id`. La base de datos puede impedir que apunte a algo que no existe.
-- **Consulta.** `SELECT columnas FROM tabla WHERE condición ORDER BY columna` lee filas. `JOIN` combina filas de dos tablas que coinciden en una columna.
-- **Índice.** Una estructura aparte, parecida a un árbol B, que permite encontrar filas sin recorrer toda la tabla. Es la misma idea que viste en Estructuras de datos.
+- **Consulta.** `SELECT columnas FROM tabla WHERE condición ORDER BY columna` lee filas. `JOIN` combina filas de dos tablas que coinciden en una columna. `LIMIT n OFFSET m` salta `m` filas y devuelve `n`, y `LIKE ?` con `%texto%` busca títulos que lo contienen.
+- **Índice.** Una estructura aparte, parecida a un árbol B, que permite encontrar filas sin recorrer toda la tabla.
+- **El problema N+1.** Si primero pides la lista de libros y después, por cada libro, una consulta para su autor, haces 1 + N consultas. Con mil libros son 1,001 viajes a la base de datos, y la página se vuelve lenta aunque cada consulta sea rápida. Un `JOIN` trae libros y autores en una sola consulta. El test de `CA-2.2` cuenta las consultas y falla si aparece este patrón.
 
-Puedes probar todo esto en vivo con `uv run python` y `import sqlite3; conn = sqlite3.connect(":memory:")`. El [tutorial oficial de sqlite3](https://docs.python.org/3/library/sqlite3.html#tutorial) toma unos diez minutos.
+Puedes probar todo esto en vivo con `uv run python` y `import sqlite3; conn = sqlite3.connect(":memory:")`.
 
 ## Qué vas a hacer
 
@@ -33,7 +34,7 @@ Puedes probar todo esto en vivo con `uv run python` y `import sqlite3; conn = sq
 ## Criterios de aceptación
 
 - `CA-2.1` `init_db` activa las llaves foráneas y SQLite lanza `sqlite3.IntegrityError` al insertar un libro con un autor inexistente.
-- `CA-2.2` `list_books_with_authors` devuelve cada libro con `id`, `title`, `year` y `author_name`, ordenado por id.
+- `CA-2.2` `list_books_with_authors` devuelve cada libro con `id`, `title`, `year` y `author_name`, ordenado por id, con una sola consulta `SELECT`.
 - `CA-2.3` `list_books_page` pagina ordenado por título, usa parámetros `?` y trata un texto malicioso como texto literal sin alterar la tabla.
 - `CA-2.4` `explain_books_by_author` reporta `SEARCH` y `USING INDEX`, sin `SCAN books`.
 

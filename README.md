@@ -21,7 +21,7 @@ Este repositorio contiene la solución verificada de [Backend On-Ramp](https://g
 | --- | --- | --- | --- | --- |
 | Paso 0 | 35 min | Instalar `uv`, levantar tu primer servidor y hablarle con el navegador, `/docs` y `curl` | [paso00_hola.py](paso00_hola.py) | [steps/00-entorno-y-primer-servidor](steps/00-entorno-y-primer-servidor/README.md) |
 | Paso 1 | 40 min | Códigos HTTP (`201`, `204`, `404`, `422`), estado aislado y validación con Pydantic y `Decimal` | [paso01_http_y_pydantic.py](paso01_http_y_pydantic.py) | [steps/01-http-y-pydantic](steps/01-http-y-pydantic/README.md) |
-| Paso 2 | 50 min | Tu primera base de datos, tablas, llaves foráneas, `JOIN`, paginación con parámetros e índices en SQLite | [paso02_sql_relacional.py](paso02_sql_relacional.py) | [steps/02-sql-relacional](steps/02-sql-relacional/README.md) |
+| Paso 2 | 60 min | Tu primera base de datos, tablas, llaves foráneas, `JOIN`, paginación con parámetros e índices en SQLite | [paso02_sql_relacional.py](paso02_sql_relacional.py) | [steps/02-sql-relacional](steps/02-sql-relacional/README.md) |
 | Paso 3 | 40 min | `Depends` y `dependency_overrides`, qué trae un JWT y la diferencia entre `401` y `403` | [paso03_depends_y_jwt.py](paso03_depends_y_jwt.py) | [steps/03-depends-y-jwt](steps/03-depends-y-jwt/README.md) |
 | Paso 4 | 25 min | Requests simultáneos, race conditions y `threading.Lock` | [paso04_concurrencia.py](paso04_concurrencia.py) | [steps/04-concurrencia](steps/04-concurrencia/README.md) |
 | Paso 5 | 30 min | Tests desde cero con `pytest` que se ponen en rojo ante dos versiones con un bug | [tests/test_paso05_estudiante.py](tests/test_paso05_estudiante.py) | [steps/05-pruebas-desde-cero](steps/05-pruebas-desde-cero/README.md) |

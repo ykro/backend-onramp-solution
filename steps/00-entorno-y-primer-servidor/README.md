@@ -19,12 +19,12 @@ Todo el curso gira alrededor de una idea, un cliente (el navegador, `curl`, una 
 - **Request.** Lleva un método (`GET` para leer, `POST` para crear, `DELETE` para borrar) y una ruta (`/libros`, `/saludo/Ana`).
 - **Respuesta.** Lleva un código de estado (`200` todo bien, `404` no existe esa ruta o recurso, `422` datos inválidos) y un cuerpo.
 - **JSON.** Es texto con la forma de un diccionario o una lista de Python, por ejemplo `{"saludo": "Hola, Ana"}`. FastAPI convierte lo que devuelves en JSON.
-- **Decorador.** `@app.get("/ruta")` encima de una función le dice a FastAPI "cuando llegue un `GET` a esta ruta, ejecuta esta función". Es la parte de Python que más sorprende si vienes de Java.
+- **Decorador.** `@app.get("/ruta")` encima de una función le dice a FastAPI "cuando llegue un `GET` a esta ruta, ejecuta esta función".
 
 ## Qué vas a hacer
 
-- **Preparar.** Instala [uv](https://docs.astral.sh/uv/getting-started/installation/) (en macOS y Linux `curl -LsSf https://astral.sh/uv/install.sh | sh`; en Windows `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"`), cierra y abre la terminal, y corre `uv sync` en la raíz del repo. `uv` descarga Python 3.13 y las dependencias del proyecto sin tocar el Python de tu sistema.
-- **Leer.** Abre [paso00_hola.py](../../paso00_hola.py). Levanta el servidor con `uv run uvicorn paso00_hola:app --reload`, abre `http://127.0.0.1:8000/` y luego `http://127.0.0.1:8000/docs`. En otra terminal prueba `curl -i http://127.0.0.1:8000/` y fíjate en la primera línea de la respuesta. En PowerShell escribe `curl.exe` en lugar de `curl`, porque ahí `curl` es otro comando.
+- **Preparar.** Instala [uv](https://docs.astral.sh/uv/getting-started/installation/) (en macOS y Linux `curl -LsSf https://astral.sh/uv/install.sh | sh`; en Windows `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"`), cierra y abre la terminal, y corre `uv sync` en la raíz del repo. `uv` descarga Python 3.13 y las dependencias del proyecto.
+- **Leer.** Abre [paso00_hola.py](../../paso00_hola.py) en tu editor (VS Code sirve). Levanta el servidor con `uv run uvicorn paso00_hola:app --reload`, abre `http://127.0.0.1:8000/` y luego `http://127.0.0.1:8000/docs`. En otra terminal prueba `curl -i http://127.0.0.1:8000/` y fíjate en la primera línea de la respuesta. En PowerShell escribe `curl.exe` en lugar de `curl`, porque ahí `curl` es otro comando.
 - **Debuguear.** Pide `http://127.0.0.1:8000/saludo/Ana` y `http://127.0.0.1:8000/libros`. Las dos responden `404`. Lee el `TODO` del archivo para saber qué debería pasar.
 - **Escribir.** Agrega los dos endpoints que faltan. Gracias a `--reload`, el servidor se reinicia solo cada vez que guardas el archivo; recarga `/docs` y prueba cada uno con el botón **Try it out**.
 
@@ -38,7 +38,7 @@ Todo el curso gira alrededor de una idea, un cliente (el navegador, `curl`, una 
 
 1. Con el servidor apagado, ¿qué te responde `curl http://127.0.0.1:8000/`? ¿Por qué es distinto de un `404`?
 2. Pide `http://127.0.0.1:8000/saludo/` (sin nombre). ¿Qué código devuelve FastAPI y por qué no llega a ejecutar tu función?
-3. Agrega por un momento una ruta `GET /titulos` que devuelva `{libro["titulo"] for libro in LIBROS}`, un `set` de Python. JSON no tiene sets, así que ¿qué crees que llega al navegador? Pruébalo varias veces y revisa el orden.
+3. Agrega por un momento una ruta `GET /titulos` que devuelva `{libro["titulo"] for libro in LIBROS}`, un `set` de Python. JSON no tiene sets, así que ¿qué crees que llega al navegador? Pruébalo, reinicia `uvicorn` con `Ctrl+C` y vuelve a probar. ¿Llegó en el mismo orden?
 4. Explica en tres líneas, con tus palabras, qué cambiaste y por qué. Si no puedes, vuelve a la pista 1 antes de seguir.
 
 ## Cómo verificar

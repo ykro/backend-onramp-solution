@@ -14,6 +14,12 @@ Este paso toma unos 40 minutos.
 
 Un backend real no responde `200 OK` a todo ni confía en el JSON que le mandan. Los [códigos de estado](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) le dicen al cliente qué pasó (`201` creado, `204` borrado sin cuerpo, `404` no existe, `422` datos inválidos), y [Pydantic](https://docs.pydantic.dev/latest/concepts/models/) revisa cada request antes de que llegue a tu función. Es exactamente lo que harás en la Unidad 1 del curso con SplitMate.
 
+## Lo mínimo que necesitas saber
+
+- **`nonlocal`.** Una función definida dentro de otra puede leer sus variables, pero para reasignar una, como un contador, necesita declararla `nonlocal`.
+- **`model_config` y `Field`.** En un modelo de Pydantic, `model_config = ConfigDict(...)` controla qué hace con campos desconocidos, y `Field` define límites como longitud mínima o "mayor que".
+- **`Decimal`.** Guarda montos exactos en base 10, a diferencia de `float`. Pydantic sabe validar cuántos decimales trae.
+
 ## Qué vas a hacer
 
 - **Leer.** Corre `uv run onramp inspect --paso 1` y anota qué código devuelve hoy cada request. Luego abre [paso01_http_y_pydantic.py](../../paso01_http_y_pydantic.py) y ubica los seis `TODO`.
