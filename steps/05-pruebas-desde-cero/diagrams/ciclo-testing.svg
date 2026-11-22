@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 920 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="test-title test-desc">
   <title id="test-title">Paso 5: Ciclo de pruebas automatizadas Arrange, Act, Assert</title>
-  <desc id="test-desc">Flujo de una prueba automatizada en pytest con las etapas Arrange, Act y Assert, mostrando verde ante calculate_late_fee sana y rojo ante calculate_late_fee_buggy con bug plantado.</desc>
+  <desc id="test-desc">Flujo de una prueba automatizada en pytest con las etapas Arrange, Act y Assert, mostrando verde ante calculate_late_fee sana y rojo ante calculate_late_fee_buggy con un bug.</desc>
   <defs>
     <marker id="arrow-t" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
       <polygon points="0 0, 8 3, 0 6" fill="#2563EB"/>

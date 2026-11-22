@@ -1,30 +1,50 @@
-# Paso 5. Pruebas automatizadas desde cero con `pytest`
+# Paso 5. Tests desde cero con `pytest`
 
-![Ciclo de pruebas automatizadas Arrange, Act, Assert](diagrams/ciclo-testing.svg)
+![Paso 5. Tests desde cero con `pytest`](diagrams/ciclo-testing.svg)
+
+Este paso toma unos 20 minutos.
+
+## Antes de empezar
+
+1. Si un test pasa siempre, pase lo que pase con el código, ¿qué te dice sobre el código?
+2. ¿Qué casos borde se te ocurren para una multa por días de atraso?
+3. ¿Qué diferencia hay entre probar a mano en `/docs` y tener un test automático?
 
 ## Por qué importa
 
-Durante el curso principal escribirás tus propias pruebas para verificar cada regla de negocio y cada ruta HTTP, siguiendo las guías oficiales de [pytest](https://docs.pytest.org/en/stable/) y [FastAPI Testing](https://fastapi.tiangolo.com/tutorial/testing/). Una prueba útil sigue el patrón **Arrange -> Act -> Assert**: prepara los datos de entrada, ejecuta la función bajo prueba y comprueba el resultado esperado. Además, una prueba solo te protege si pasa en verde ante código sano y falla en rojo cuando aparece un bug.
+En el curso escribirás tus propios tests y la nota toma en cuenta si detectan errores reales. Un buen test sigue el patrón Arrange, Act, Assert (preparar datos, ejecutar, comprobar) y cumple dos condiciones, pasa en verde con el código correcto y se pone en rojo cuando aparece un bug. Este paso usa [pytest](https://docs.pytest.org/en/stable/getting-started.html).
 
-## Qué se construye
+## Qué vas a hacer
 
-El módulo [paso05_pruebas.py](../../paso05_pruebas.py) ya está completo y expone dos funciones: `calculate_late_fee` (versión sana) y `calculate_late_fee_buggy` (versión con bug plantado que resta un día y permite multas negativas). Tu trabajo consiste en completar 3 pruebas en [tests/test_paso05_estudiante.py](../../tests/test_paso05_estudiante.py) (~10 minutos):
-
-- **Caso normal (`test_normal_late_fee`):** verifica que para varios días de atraso (por ejemplo, 4 días a tarifa `Decimal("2.50")`), `paso05_pruebas.calculate_late_fee` devuelva `Decimal("10.00")`.
-- **Caso borde con `days_late <= 0` (`test_edge_case_zero_or_negative_days`):** verifica que `0` días y días negativos (por ejemplo, `-3`) devuelvan `Decimal("0.00")`.
-- **Detección del bug (`test_detects_bug_in_late_fee`):** verifica una regla exacta sobre `paso05_pruebas.calculate_late_fee` que la versión `calculate_late_fee_buggy` incumple.
+- **Leer.** Lee [paso05_pruebas.py](../../paso05_pruebas.py). Trae `calculate_late_fee`, la versión correcta, y `calculate_late_fee_buggy`, una versión con un bug. Corre `uv run onramp inspect --paso 5` para comparar las dos con varios valores.
+- **Debuguear.** Antes de escribir tests, descubre qué hace mal la versión con un bug. Busca un valor de entrada donde las dos funciones den resultados distintos.
+- **Escribir.** Completa los tres tests de [tests/test_paso05_estudiante.py](../../tests/test_paso05_estudiante.py), un caso normal, un caso borde con días en cero o negativos, y un test que falle con la versión con un bug.
 
 ## Criterios de aceptación
 
-- `CA-5.1` `tests/test_paso05_estudiante.py` define al menos 3 funciones `test_*` y todas pasan en verde (código de salida `0`) contra `paso05_pruebas.calculate_late_fee`.
-- `CA-5.2` Cuando el verificador reemplaza `paso05_pruebas.calculate_late_fee` por `paso05_pruebas.calculate_late_fee_buggy`, al menos una de tus pruebas falla en rojo (código de salida `1`).
+- `CA-5.1` El archivo tiene al menos 3 funciones `test_*` y todas pasan contra `calculate_late_fee`.
+- `CA-5.2` Cuando el verificador reemplaza `calculate_late_fee` por `calculate_late_fee_buggy`, al menos uno de tus tests falla.
+
+## Al terminar
+
+1. Escribe un test que pase con las dos versiones, la correcta y la que tiene el bug. ¿Por qué ese test no protege nada?
+2. Si la tarifa diaria cambiara a `Decimal("3.00")`, ¿cuántos de tus tests tendrías que cambiar? ¿Cómo los escribirías para que dependan menos de ese número?
+3. ¿Por qué el verificador corre tus tests contra la versión con un bug en lugar de solo revisar que pasen?
+4. Explica en tres líneas, con tus palabras, qué cambiaste y por qué. Si no puedes, vuelve a la pista 1 antes de seguir.
 
 ## Cómo verificar
-
-Compara la salida de ambas funciones en consola, corre tus pruebas directo con `pytest` y luego ejecuta el verificador del Paso 5:
 
 ```bash
 uv run onramp inspect --paso 5
 uv run pytest tests/test_paso05_estudiante.py
 uv run onramp check --paso 5
 ```
+
+Si te trabas, abre la [pista 1](hints/1.md). Cada pista da un poco más que la anterior; la pista 3 trae un esqueleto, nunca la respuesta completa.
+
+## Respuestas de autoevaluación
+
+1. Por ejemplo, comprobar que el resultado es un `Decimal`. Pasa con las dos versiones porque no revisa el valor, así que nunca te avisaría del bug.
+2. Si cada test repite `2.50` a mano, todos. Es mejor calcular el esperado a partir de la tarifa que pasas como argumento (`daily_rate`), o pasar la tarifa explícitamente en el test.
+3. Porque un test que solo pasa no demuestra nada. Correrlo contra una versión con un bug comprueba que el test sí revisa la regla y se pone en rojo cuando alguien la rompe.
+4. Respuesta personal. Debe mencionar Arrange, Act, Assert, el caso borde de días menores o iguales a cero y el valor donde la versión con un bug falla.

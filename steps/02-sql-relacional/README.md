@@ -1,32 +1,61 @@
-# Paso 2. SQLite relacional, JOIN, paginación e índices
+# Paso 2. Tu primera base de datos relacional con SQLite
 
-![Esquema relacional e índice en SQLite](diagrams/esquema-y-indice.svg)
+![Paso 2. Tu primera base de datos relacional con SQLite](diagrams/esquema-y-indice.svg)
+
+Este paso toma unos 35 minutos.
+
+## Antes de empezar
+
+1. Si guardas libros y autores en dos listas de Python, ¿qué impide que un libro apunte a un autor que no existe?
+2. En Estructuras de datos viste búsqueda lineal y búsqueda en árboles. ¿Cuál esperas que use una base de datos para encontrar los libros de un autor entre un millón?
+3. ¿Qué podría pasar si armas una consulta SQL pegando el texto que escribió el usuario?
 
 ## Por qué importa
 
-Antes de usar un ORM en el curso principal, necesitas ver cómo responde una base de datos relacional real en [`sqlite3`](https://docs.python.org/3/library/sqlite3.html). Activar [`PRAGMA foreign_keys`](https://www.sqlite.org/foreignkeys.html) impide filas huérfanas, combinar tablas con [`INNER JOIN`](https://www.sqlite.org/lang_select.html#fromclause) y paginar con [`ORDER BY` / `LIMIT` / `OFFSET`](https://www.sqlite.org/lang_select.html#limitoffset) usando parámetros `?` protege tus consultas contra inyección SQL, y revisar [`EXPLAIN QUERY PLAN`](https://www.sqlite.org/eqp.html) te muestra la diferencia concreta entre recorrer toda la tabla (`SCAN`) y buscar con un índice (`SEARCH USING INDEX`).
+En la Unidad 2 del curso trabajarás con SQLModel sobre una base de datos real. Antes de usar un ORM conviene ver qué hace la base de datos por debajo, con [sqlite3](https://docs.python.org/3/library/sqlite3.html), que ya viene con Python y no necesita instalar nada. En este paso ves cuatro ideas que el ORM da por sabidas, la llave foránea, el `JOIN`, la paginación con parámetros y el índice.
 
-## Qué se construye
+## Lo mínimo que necesitas saber
 
-Trabajas sobre [paso02_sql_relacional.py](../../paso02_sql_relacional.py) (~16 minutos):
+- **Tabla, fila y columna.** Una tabla es como una lista de registros con la misma forma. Cada fila es un registro y cada columna un campo con tipo (`INTEGER`, `TEXT`).
+- **Llave primaria (`PRIMARY KEY`).** Identifica cada fila de forma única, como el `id` de un libro.
+- **Llave foránea (`FOREIGN KEY`).** Una columna que apunta a la llave primaria de otra tabla, como `books.author_id` hacia `authors.id`. La base de datos puede impedir que apunte a algo que no existe.
+- **Consulta.** `SELECT columnas FROM tabla WHERE condición ORDER BY columna` lee filas. `JOIN` combina filas de dos tablas que coinciden en una columna.
+- **Índice.** Una estructura aparte, parecida a un árbol B, que permite encontrar filas sin recorrer toda la tabla. Es la misma idea que viste en Estructuras de datos.
 
-- **Llaves foráneas activas en `init_db` (TODO 1):** ejecuta `conn.execute("PRAGMA foreign_keys = ON")` antes de crear las tablas `authors` y `books`.
-- **Consulta con `INNER JOIN` en `list_books_with_authors` (TODO 2):** une `books AS b` con `authors AS a ON a.id = b.author_id`, ordena con `ORDER BY b.id ASC` y devuelve diccionarios con las llaves `id`, `title`, `year` y `author_name`.
-- **Paginación y filtro seguro en `list_books_page` (TODO 3):** usa `INNER JOIN`, `ORDER BY b.title ASC LIMIT ? OFFSET ?` y, cuando `title_filter` no es `None`, agrega `WHERE b.title LIKE ?` pasando `f"%{title_filter}%"` en la tupla de parámetros de `conn.execute(...)`.
-- **Índice en `init_db` (TODO 4):** crea `CREATE INDEX IF NOT EXISTS idx_books_author_id ON books(author_id)` para eliminar `SCAN books`.
+Puedes probar todo esto en vivo con `uv run python` y `import sqlite3; conn = sqlite3.connect(":memory:")`. El [tutorial oficial de sqlite3](https://docs.python.org/3/library/sqlite3.html#tutorial) toma unos diez minutos.
+
+## Qué vas a hacer
+
+- **Leer.** Lee las dos tablas que crea `init_db` en [paso02_sql_relacional.py](../../paso02_sql_relacional.py) y corre `uv run onramp inspect --paso 2`. Fíjate en el libro huérfano que SQLite deja guardar y en la palabra `SCAN` del plan de la consulta.
+- **Debuguear.** Explica con tus palabras por qué SQLite aceptó un `author_id` que no existe, aunque la tabla declara `FOREIGN KEY`. La respuesta está en la [documentación de llaves foráneas](https://www.sqlite.org/foreignkeys.html#fk_enable).
+- **Escribir.** Completa los cuatro `TODO`, dos en `init_db` y dos consultas. Las consultas devuelven listas de diccionarios con las llaves que pide cada docstring.
 
 ## Criterios de aceptación
 
-- `CA-2.1` `init_db(conn)` activa `PRAGMA foreign_keys = ON` y SQLite lanza `sqlite3.IntegrityError` al insertar un libro con un `author_id` inexistente.
-- `CA-2.2` `list_books_with_authors(conn)` devuelve cada libro unido con el nombre de su autor (`id`, `title`, `year`, `author_name`) ordenado por `b.id ASC`.
-- `CA-2.3` `list_books_page(conn, limit, offset, title_filter)` pagina ordenado por `b.title ASC` usando parámetros `?` y trata entradas maliciosas como texto literal sin alterar la tabla `books`.
-- `CA-2.4` `explain_books_by_author(conn, author_id)` reporta `SEARCH` y `USING INDEX` sin `SCAN books`.
+- `CA-2.1` `init_db` activa las llaves foráneas y SQLite lanza `sqlite3.IntegrityError` al insertar un libro con un autor inexistente.
+- `CA-2.2` `list_books_with_authors` devuelve cada libro con `id`, `title`, `year` y `author_name`, ordenado por id.
+- `CA-2.3` `list_books_page` pagina ordenado por título, usa parámetros `?` y trata un texto malicioso como texto literal sin alterar la tabla.
+- `CA-2.4` `explain_books_by_author` reporta `SEARCH` y `USING INDEX`, sin `SCAN books`.
+
+## Al terminar
+
+1. Borras un autor que todavía tiene libros. Con las llaves foráneas activas, ¿qué pasa y por qué es mejor que la base de datos lo impida en lugar de tu código Python?
+2. La página 3 de 10 libros por página, ¿qué `LIMIT` y qué `OFFSET` usa? ¿Qué problema aparece si no ordenas antes de paginar?
+3. Un índice acelera las búsquedas por `author_id`. ¿Qué operación se vuelve un poco más lenta a cambio y por qué?
+4. Explica en tres líneas, con tus palabras, qué cambiaste y por qué. Si no puedes, vuelve a la pista 1 antes de seguir.
 
 ## Cómo verificar
-
-Inspecciona el plan de consulta y las llaves foráneas en vivo, y corre las pruebas del Paso 2:
 
 ```bash
 uv run onramp inspect --paso 2
 uv run onramp check --paso 2
 ```
+
+Si te trabas, abre la [pista 1](hints/1.md). Cada pista da un poco más que la anterior; la pista 3 trae un esqueleto, nunca la respuesta completa.
+
+## Respuestas de autoevaluación
+
+1. SQLite rechaza el borrado con `IntegrityError` mientras existan libros que apuntan a ese autor. La base de datos lo garantiza para cualquier programa que la use, mientras que una validación en Python solo protege al código que se acuerda de llamarla.
+2. `LIMIT 10 OFFSET 20`. Sin `ORDER BY`, la base de datos puede devolver las filas en cualquier orden, así que un libro podría aparecer en dos páginas o en ninguna.
+3. Insertar, actualizar o borrar filas, porque la base de datos también tiene que actualizar el índice. Por eso no se indexa cada columna, solo las que se usan para buscar.
+4. Respuesta personal. Debe mencionar el `PRAGMA`, el `JOIN` entre las dos tablas, los parámetros `?` y el índice que cambia `SCAN` por `SEARCH`.

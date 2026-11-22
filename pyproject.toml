@@ -1,7 +1,7 @@
 [project]
 name = "backend-onramp"
 version = "0.1.0"
-description = "Kit práctico de nivelación de 60 minutos antes del Curso 1 de Backend con FastAPI."
+description = "On-ramp de nivelación (unas 2.5 horas) antes del Curso 1 de Backend con FastAPI."
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [
@@ -9,6 +9,7 @@ dependencies = [
     "httpx>=0.28.0",
     "pydantic>=2.10.0",
     "pyjwt>=2.10.0",
+    "uvicorn>=0.32.0",
 ]
 
 [dependency-groups]

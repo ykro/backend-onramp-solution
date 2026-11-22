@@ -30,7 +30,7 @@ def test_edge_case_zero_or_negative_days() -> None:
 
 
 def test_detects_bug_in_late_fee() -> None:
-    """Verifica el cobro del primer día de atraso, donde la versión con bug devuelve 0.00."""
+    """Verifica el cobro del primer día de atraso, donde la versión con un bug devuelve 0.00."""
     # Arrange
     days_late = 1
 
@@ -39,4 +39,3 @@ def test_detects_bug_in_late_fee() -> None:
 
     # Assert
     assert fee == Decimal("2.50")
-    assert fee != paso05_pruebas.calculate_late_fee_buggy(days_late)

@@ -13,6 +13,24 @@ from onramp_judge.helpers import (
 )
 
 
+def _inspect_paso00() -> None:
+    from fastapi.testclient import TestClient
+
+    import paso00_hola as paso00
+
+    print("=== PASO 0: Entorno y primer servidor web ===")
+    print("  Para verlo en el navegador: uv run uvicorn paso00_hola:app --reload")
+    client = TestClient(paso00.app)
+    for path in ["/", "/saludo/Ana", "/libros"]:
+        res = client.get(path)
+        print(
+            format_http_exchange(
+                "GET", path, res.status_code, res.headers.get("content-type"), res.content
+            )
+        )
+    print()
+
+
 def _inspect_paso01() -> None:
     from fastapi.testclient import TestClient
 
@@ -36,6 +54,9 @@ def _inspect_paso01() -> None:
             )
         )
 
+        res_isolated = client_b.get("/books")
+        print(f"  Libros que ve una segunda app (app_b), debería ser []: {res_isolated.text}")
+
         res_missing = client_a.get("/books/999")
         print(
             format_http_exchange(
@@ -58,8 +79,6 @@ def _inspect_paso01() -> None:
             )
         )
 
-        res_isolated = client_b.get("/books")
-        print(f"  Libros visibles en una segunda instancia (app_b): {res_isolated.text}")
 
         res_extra = client_a.post(
             "/books",
@@ -209,6 +228,7 @@ def _inspect_paso05() -> None:
 
 
 _INSPECTORS = {
+    0: _inspect_paso00,
     1: _inspect_paso01,
     2: _inspect_paso02,
     3: _inspect_paso03,
@@ -255,9 +275,9 @@ def main(argv: list[str] | None = None) -> int:
     inspect_parser.add_argument(
         "--paso",
         type=int,
-        choices=[1, 2, 3, 4, 5],
+        choices=[0, 1, 2, 3, 4, 5],
         default=None,
-        help="Inspecciona únicamente un paso (1 a 5).",
+        help="Inspecciona únicamente un paso (0 a 5).",
     )
 
     check_parser = subparsers.add_parser(
@@ -267,9 +287,9 @@ def main(argv: list[str] | None = None) -> int:
     check_parser.add_argument(
         "--paso",
         type=int,
-        choices=[1, 2, 3, 4, 5],
+        choices=[0, 1, 2, 3, 4, 5],
         default=None,
-        help="Verifica únicamente un paso (1 a 5).",
+        help="Verifica únicamente un paso (0 a 5).",
     )
 
     args = parser.parse_args(argv)

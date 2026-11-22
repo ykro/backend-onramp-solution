@@ -1,6 +1,14 @@
 # Glosario de Backend Onramp
 
-Este glosario reúne los conceptos clave que aparecen en los 5 pasos de Backend Onramp y en las guías del curso principal. Cada entrada explica qué resuelve el concepto y enlaza a su documentación oficial.
+Este glosario reúne los conceptos clave que aparecen en los 6 pasos de Backend On-Ramp y en las guías del curso principal. Cada entrada explica qué resuelve el concepto y enlaza a su documentación oficial.
+
+## Cliente, servidor, request y endpoint
+
+Un servidor es un programa que escucha en un puerto y responde. Un cliente (el navegador, `curl`, una app) le manda un request HTTP con un método (`GET`, `POST`, `DELETE`) y una ruta, según [MDN, una vista general de HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview). Un endpoint es la combinación de método y ruta que el servidor atiende, como `GET /libros`.
+
+## `uvicorn`
+
+Servidor que ejecuta tu app de FastAPI y la deja escuchando en `http://127.0.0.1:8000`, documentado en [Uvicorn](https://www.uvicorn.org/). Con `--reload` se reinicia solo cada vez que guardas un archivo. FastAPI publica además la página `/docs` para probar cada endpoint.
 
 ## HTTP status codes
 

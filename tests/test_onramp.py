@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+import paso00_hola as paso00
 import paso01_http_y_pydantic as paso01
 import paso02_sql_relacional as paso02
 import paso03_depends_y_jwt as paso03
@@ -303,3 +304,31 @@ def test_paso05_student_tests_fail_on_buggy_function() -> None:
         "debe fallar (código 1) para demostrar que detecta el bug:\n"
         f"{buggy.stdout}\n{buggy.stderr}"
     )
+
+
+# --- Paso 0: entorno y primer servidor -------------------------------------------------
+
+
+def test_paso00_root_responde_mensaje() -> None:
+    client = TestClient(paso00.app)
+    res = client.get("/")
+    assert res.status_code == 200
+    assert res.json() == {"mensaje": "Hola desde la biblioteca"}
+
+
+def test_paso00_saludo_con_nombre_en_la_ruta() -> None:
+    client = TestClient(paso00.app)
+    res = client.get("/saludo/Ana")
+    assert res.status_code == 200, "CA-0.2: GET /saludo/Ana debe existir y responder 200."
+    assert res.json() == {"saludo": "Hola, Ana"}
+    res_tilde = client.get("/saludo/María José")
+    assert res_tilde.json() == {"saludo": "Hola, María José"}
+
+
+def test_paso00_libros_y_openapi() -> None:
+    client = TestClient(paso00.app)
+    res = client.get("/libros")
+    assert res.status_code == 200, "CA-0.3: GET /libros debe existir y responder 200."
+    assert res.json() == paso00.LIBROS
+    paths = client.get("/openapi.json").json()["paths"]
+    assert "/saludo/{nombre}" in paths and "/libros" in paths

@@ -1,30 +1,50 @@
-# Paso 3. Inyección con `Depends` y autorización con JWT
+# Paso 3. Dependencias con `Depends` y autorización con JWT
 
-![Inyección con Depends y autorización JWT](diagrams/depends-y-jwt.svg)
+![Paso 3. Dependencias con `Depends` y autorización con JWT](diagrams/depends-y-jwt.svg)
+
+Este paso toma unos 25 minutos.
+
+## Antes de empezar
+
+1. Si una ruta lee una variable global, ¿cómo harías para que un test use datos distintos sin cambiar el código de la ruta?
+2. Un JWT se ve como texto aleatorio. ¿Crees que alguien que lo intercepta puede leer lo que trae adentro?
+3. Un usuario manda un token válido pero no tiene permiso para crear salas. ¿Debería recibir el mismo error que alguien que no mandó token?
 
 ## Por qué importa
 
-Una API fácil de mantener no lee variables globales dentro de sus rutas: declara sus dependencias con [FastAPI `Depends`](https://fastapi.tiangolo.com/tutorial/dependencies/) para poder sustituirlas en pruebas con [`dependency_overrides`](https://fastapi.tiangolo.com/advanced/testing-dependencies/). Al mismo tiempo, entender que el bloque central de un [JWT (RFC 7519)](https://datatracker.ietf.org/doc/html/rfc7519) viene codificado en [`Base64Url`](https://docs.python.org/3/library/base64.html#base64.urlsafe_b64decode) —y no cifrado— evita guardar secretos dentro del token, mientras separar [`401 Unauthorized`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401) de [`403 Forbidden`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403) deja claro si falló la identidad o si faltaron permisos.
+[`Depends`](https://fastapi.tiangolo.com/tutorial/dependencies/) es la forma en que FastAPI le entrega a cada ruta lo que necesita (un repositorio, el usuario actual), y [`dependency_overrides`](https://fastapi.tiangolo.com/advanced/testing-dependencies/) permite reemplazarlo en los tests. Un [JWT](https://jwt.io/introduction) es un token firmado con tres partes separadas por punto, y la parte del medio solo está codificada, no cifrada. En la Unidad 3 del curso construirás el login completo sobre estas dos ideas.
 
-## Qué se construye
+## Qué vas a hacer
 
-Trabajas sobre [paso03_depends_y_jwt.py](../../paso03_depends_y_jwt.py) (~12 minutos):
-
-- **Inyección de dependencias en `GET /rooms` (TODO 1):** recibe `repo: Annotated[RoomRepository, Depends(get_room_repo)]` y retorna `repo.list_rooms()` en lugar de leer `_default_repo` directo.
-- **Decodificación Base64Url en `decode_jwt_payload_unverified` (TODO 2):** separa `token.split(".")`, toma `parts[1]`, agrega el relleno `=` faltante (`"=" * (-len(payload_segment) % 4)`), decodifica con `base64.urlsafe_b64decode(...)` y convierte el JSON con `json.loads(...)`.
-- **Separación de `401` y `403` en `POST /admin/rooms` (TODO 3):** mantiene `401 Unauthorized` si falta el token o falla la firma, y cambia a `status.HTTP_403_FORBIDDEN` cuando el token es válido pero `claims.get("role") != "librarian"`.
+- **Leer.** Corre `uv run onramp inspect --paso 3`. Copia uno de los tokens que imprime y pégalo en [jwt.io](https://jwt.io) para ver su contenido. Luego lee `get_room_repo` y las dos rutas de [paso03_depends_y_jwt.py](../../paso03_depends_y_jwt.py).
+- **Debuguear.** En `inspect`, un usuario con rol `member` recibe `401` al crear una sala. Decide qué código corresponde según [401](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401) y [403](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403).
+- **Escribir.** Resuelve los tres `TODO`, la dependencia en `GET /rooms`, la lectura del bloque central del token y el código para el rol sin permiso.
 
 ## Criterios de aceptación
 
 - `CA-3.1` Sobrescribir `app.dependency_overrides[get_room_repo]` hace que `GET /rooms` devuelva las salas del repositorio inyectado.
 - `CA-3.2` `decode_jwt_payload_unverified(token)` devuelve el diccionario con `sub` y `role` sin usar `JWT_SECRET`.
-- `CA-3.3` `POST /admin/rooms` responde `401` sin token o con firma inválida, `403` con un token válido de rol `"member"`, y `201` con un token válido de rol `"librarian"`.
+- `CA-3.3` `POST /admin/rooms` responde `401` sin token o con firma inválida, `403` con rol `member` y `201` con rol `librarian`.
+
+## Al terminar
+
+1. Si cualquiera puede leer el contenido de un JWT, ¿qué impide que alguien cambie `"role": "member"` por `"librarian"` y lo reenvíe?
+2. ¿Qué dato nunca deberías guardar dentro de un JWT y por qué?
+3. En un test reemplazas el repositorio con `dependency_overrides`. ¿Qué tendrías que hacer al terminar el test para no afectar a los siguientes?
+4. Explica en tres líneas, con tus palabras, qué cambiaste y por qué. Si no puedes, vuelve a la pista 1 antes de seguir.
 
 ## Cómo verificar
-
-Observa en vivo el resultado de los tokens y corre las pruebas del Paso 3:
 
 ```bash
 uv run onramp inspect --paso 3
 uv run onramp check --paso 3
 ```
+
+Si te trabas, abre la [pista 1](hints/1.md). Cada pista da un poco más que la anterior; la pista 3 trae un esqueleto, nunca la respuesta completa.
+
+## Respuestas de autoevaluación
+
+1. La firma. El servidor recalcula la firma con su secreto; si alguien cambia el contenido, la firma ya no coincide y `jwt.decode` lanza un error que termina en `401`.
+2. Contraseñas, números de tarjeta o cualquier secreto, porque el contenido viaja solo codificado en Base64Url y cualquiera que tenga el token puede leerlo.
+3. Limpiar el reemplazo con `app.dependency_overrides.clear()` (o crear una app nueva por test), para que el siguiente test vuelva a usar la dependencia real.
+4. Respuesta personal. Debe mencionar la inyección con `Depends`, que el bloque central del JWT se lee sin secreto y la diferencia entre `401` y `403`.
