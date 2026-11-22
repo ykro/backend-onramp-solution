@@ -276,6 +276,31 @@ def _count_student_tests() -> int:
     )
 
 
+def _tests_sin_comprobacion() -> list[str]:
+    """Nombres de los test_* que no llaman a calculate_late_fee o no tienen un assert real."""
+    tree = ast.parse(STUDENT_TEST_FILE.read_text(encoding="utf-8"))
+    debiles = []
+    for node in tree.body:
+        if not (isinstance(node, ast.FunctionDef) and node.name.startswith("test_")):
+            continue
+        llama = any(
+            isinstance(n, ast.Call)
+            and (
+                (isinstance(n.func, ast.Name) and n.func.id == "calculate_late_fee")
+                or (isinstance(n.func, ast.Attribute) and n.func.attr == "calculate_late_fee")
+            )
+            for n in ast.walk(node)
+        )
+        comprueba = any(
+            (isinstance(n, ast.Assert) and not isinstance(n.test, ast.Constant))
+            or (isinstance(n, ast.Attribute) and n.attr == "raises")
+            for n in ast.walk(node)
+        )
+        if not (llama and comprueba):
+            debiles.append(node.name)
+    return debiles
+
+
 def _run_student_suite(version: str | None) -> subprocess.CompletedProcess[str]:
     if version is None:
         return subprocess.run(
@@ -302,6 +327,11 @@ def _run_student_suite(version: str | None) -> subprocess.CompletedProcess[str]:
 def test_paso05_student_tests_pass_on_healthy_function() -> None:
     assert _count_student_tests() >= 3, (
         "Escribe al menos 3 funciones test_* en tests/test_paso05_estudiante.py."
+    )
+    debiles = _tests_sin_comprobacion()
+    assert not debiles, (
+        "Cada test debe llamar a calculate_late_fee y comprobar el resultado con un assert. "
+        f"Estos no lo hacen: {', '.join(debiles)}."
     )
     healthy = _run_student_suite(None)
     assert healthy.returncode == 0, (

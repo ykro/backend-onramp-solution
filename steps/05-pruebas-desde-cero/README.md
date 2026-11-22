@@ -18,11 +18,11 @@ En el curso escribirás tus propios tests y la nota toma en cuenta si detectan e
 
 - **Leer.** Lee `calculate_late_fee` en [paso05_pruebas.py](../../paso05_pruebas.py). El verificador guarda dos versiones con un bug, la A y la B. Corre `uv run onramp inspect --paso 5` para ver una tabla con la correcta y las dos versiones lado a lado.
 - **Debuguear.** Antes de escribir tests, describe con tus palabras qué hace mal cada versión. Para cada una, anota un valor de días donde da un resultado distinto de la correcta. Compara esa lista con los cuatro valores que escribiste al inicio: ¿alguno de tus valores habría detectado los dos bugs?
-- **Escribir.** Completa los tres tests de [tests/test_paso05_estudiante.py](../../tests/test_paso05_estudiante.py), un caso normal, un caso borde sin atraso y un tercer caso que tú elijas. Juntos tienen que detectar las dos versiones.
+- **Escribir.** Completa los tres tests de [tests/test_paso05_estudiante.py](../../tests/test_paso05_estudiante.py), un caso normal, un edge case sin atraso y un tercer caso que tú elijas. Juntos tienen que detectar las dos versiones.
 
 ## Criterios de aceptación
 
-- `CA-5.1` El archivo tiene al menos 3 funciones `test_*` y todas pasan contra `calculate_late_fee`.
+- `CA-5.1` El archivo tiene al menos 3 funciones `test_*` y todas pasan contra `calculate_late_fee`. Cada test llama a `calculate_late_fee` y comprueba el resultado con un `assert`.
 - `CA-5.2` Cuando el verificador pone la versión A en lugar de `calculate_late_fee`, al menos uno de tus tests falla.
 - `CA-5.3` Lo mismo con la versión B.
 
