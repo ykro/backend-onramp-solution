@@ -1,4 +1,4 @@
-"""Paso 0 (~25 min): tu primer servidor web con FastAPI.
+"""Paso 0 (~35 min): tu primer servidor web con FastAPI.
 
 Levanta el servidor con `uv run uvicorn paso00_hola:app --reload`, ábrelo en el navegador
 (`http://127.0.0.1:8000/` y `http://127.0.0.1:8000/docs`) y resuelve los TODO hasta que pase

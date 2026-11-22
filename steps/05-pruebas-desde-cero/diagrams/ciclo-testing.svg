@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 920 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="test-title test-desc">
   <title id="test-title">Paso 5: Ciclo de pruebas automatizadas Arrange, Act, Assert</title>
-  <desc id="test-desc">Flujo de una prueba automatizada en pytest con las etapas Arrange, Act y Assert, mostrando verde ante calculate_late_fee sana y rojo ante calculate_late_fee_buggy con un bug.</desc>
+  <desc id="test-desc">Flujo de una prueba automatizada en pytest con las etapas Arrange, Act y Assert, mostrando verde ante la calculate_late_fee correcta y rojo ante cada versión con un bug.</desc>
   <defs>
     <marker id="arrow-t" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
       <polygon points="0 0, 8 3, 0 6" fill="#2563EB"/>
@@ -50,8 +50,8 @@
   <text x="50" y="270" fill="#047857" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">days=4 -&gt; 10.00 · days=0 -&gt; 0.00 · days=-3 -&gt; 0.00</text>
 
   <rect x="474" y="202" width="414" height="86" rx="10" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5"/>
-  <text x="492" y="228" fill="#991B1B" font-size="12.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ROJO ante calculate_late_fee_buggy (bug)</text>
-  <text x="492" y="250" fill="#B91C1C" font-size="11.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Al sustituir la función por la versión con bug, falla (código 1):</text>
+  <text x="492" y="228" fill="#991B1B" font-size="12.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ROJO ante cada versión con un bug</text>
+  <text x="492" y="250" fill="#B91C1C" font-size="11.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Al sustituir la función por la versión A o la B, falla (código 1):</text>
   <text x="492" y="270" fill="#B91C1C" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">days=4 -&gt; 7.50 · days=0 -&gt; -2.50 (detectado)</text>
 
   <text x="32" y="312" fill="#64748B" font-size="11" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Verifica solo este paso con: uv run onramp inspect --paso 5 y uv run onramp check --paso 5</text>

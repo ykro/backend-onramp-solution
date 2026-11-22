@@ -2,7 +2,7 @@
 
 ![Paso 3. Dependencias con `Depends` y autorización con JWT](diagrams/depends-y-jwt.svg)
 
-Este paso toma unos 25 minutos.
+Este paso toma unos 40 minutos.
 
 ## Antes de empezar
 
@@ -14,9 +14,18 @@ Este paso toma unos 25 minutos.
 
 [`Depends`](https://fastapi.tiangolo.com/tutorial/dependencies/) es la forma en que FastAPI le entrega a cada ruta lo que necesita (un repositorio, el usuario actual), y [`dependency_overrides`](https://fastapi.tiangolo.com/advanced/testing-dependencies/) permite reemplazarlo en los tests. Un [JWT](https://jwt.io/introduction) es un token firmado con tres partes separadas por punto, y la parte del medio solo está codificada, no cifrada. En la Unidad 3 del curso construirás el login completo sobre estas dos ideas.
 
+## Lo mínimo que necesitas saber
+
+Este paso junta dos ideas que no dependen una de la otra. Puedes resolver primero una y después la otra.
+
+- **Inyección de dependencias.** En lugar de que la ruta busque por su cuenta el repositorio de salas, lo declara como parámetro y FastAPI se lo entrega. Es como recibir un objeto en el constructor en Java en lugar de crearlo adentro. La ventaja es que en un test puedes entregarle otro repositorio.
+- **Codificar no es cifrar.** Base64 convierte bytes en letras y números para que viajen como texto. Cualquiera lo revierte sin clave. Cifrar sí necesita una clave.
+- **Las tres partes de un JWT.** `encabezado.contenido.firma`. Las dos primeras son JSON en Base64Url. La firma la calcula el servidor con su secreto y sirve para detectar si alguien cambió el contenido.
+- **`401` y `403`.** `401` significa "no sé quién eres" (falta el token o es inválido). `403` significa "sé quién eres, pero no tienes permiso".
+
 ## Qué vas a hacer
 
-- **Leer.** Corre `uv run onramp inspect --paso 3`. Copia uno de los tokens que imprime y pégalo en [jwt.io](https://jwt.io) para ver su contenido. Luego lee `get_room_repo` y las dos rutas de [paso03_depends_y_jwt.py](../../paso03_depends_y_jwt.py).
+- **Leer.** Corre `uv run onramp inspect --paso 3`. Copia completo el token que imprime y pégalo en [jwt.io](https://jwt.io) para ver su contenido. Luego lee `get_room_repo` y las dos rutas de [paso03_depends_y_jwt.py](../../paso03_depends_y_jwt.py).
 - **Debuguear.** En `inspect`, un usuario con rol `member` recibe `401` al crear una sala. Decide qué código corresponde según [401](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401) y [403](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403).
 - **Escribir.** Resuelve los tres `TODO`, la dependencia en `GET /rooms`, la lectura del bloque central del token y el código para el rol sin permiso.
 

@@ -2,7 +2,7 @@
 
 ![Paso 4. Requests simultáneos y `threading.Lock`](diagrams/lock-concurrencia.svg)
 
-Este paso toma unos 15 minutos.
+Este paso toma unos 25 minutos.
 
 ## Antes de empezar
 
@@ -28,7 +28,7 @@ Un servidor web atiende varios requests al mismo tiempo. Cuando dos de ellos lee
 ## Al terminar
 
 1. Si pones el candado solo alrededor de `append`, sin incluir la revisión de disponibilidad, ¿se arregla el problema? ¿Por qué?
-2. Tu API corre en dos servidores detrás de un load balancer. ¿Sigue sirviendo `threading.Lock`? ¿Qué pieza tendría que garantizar la exclusión en ese caso?
+2. Tu API corre en dos servidores detrás de un load balancer (un servidor que reparte los requests entre los dos). ¿Sigue sirviendo `threading.Lock`? ¿Qué pieza tendría que garantizar la exclusión en ese caso?
 3. Quitas el `time.sleep` y los tests pasan sin candado. ¿Significa que el código es correcto?
 4. Explica en tres líneas, con tus palabras, qué cambiaste y por qué. Si no puedes, vuelve a la pista 1 antes de seguir.
 

@@ -19,7 +19,7 @@ def test_normal_late_fee() -> None:
 
 
 def test_edge_case_zero_or_negative_days() -> None:
-    """Verifica que cero días o días negativos nunca generen multa ni montos negativos."""
+    """Cero días y días negativos no generan multa. La versión A cobra un monto negativo con -3."""
     # Arrange & Act
     fee_zero = paso05_pruebas.calculate_late_fee(0)
     fee_negative = paso05_pruebas.calculate_late_fee(-3)
@@ -30,7 +30,7 @@ def test_edge_case_zero_or_negative_days() -> None:
 
 
 def test_detects_bug_in_late_fee() -> None:
-    """Verifica el cobro del primer día de atraso, donde la versión con un bug devuelve 0.00."""
+    """El primer día de atraso ya cobra. La versión B devuelve 0.00 aquí."""
     # Arrange
     days_late = 1
 

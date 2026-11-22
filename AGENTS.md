@@ -15,5 +15,5 @@ El estudiante usa este repositorio como nivelación antes del Curso 1 de Backend
 ## Reglas del repositorio
 
 - No modifiques `tests/test_onramp.py`, `paso05_pruebas.py` ni `onramp_judge/` para hacer pasar una verificación. El estudiante edita solo `paso00_hola.py` a `paso04_concurrencia.py` y `tests/test_paso05_estudiante.py`.
-- En el Paso 5 los tests deben llamar a `paso05_pruebas.calculate_late_fee`; el verificador los corre también contra la versión con un bug.
+- En el Paso 5 los tests deben llamar a `paso05_pruebas.calculate_late_fee`; el verificador los corre también contra dos versiones con un bug (`onramp_judge/versiones_con_bug.py`). No le muestres al estudiante ese archivo antes de que compare las versiones con `inspect`.
 - Cuando aparezca un error en consola, ayúdale a leer la línea exacta donde falló y a compararla con lo que esperaba el test.

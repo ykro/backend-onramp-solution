@@ -1,4 +1,4 @@
-"""Suite determinista de 17 pruebas para los 5 pasos independientes de Backend Onramp."""
+"""Suite determinista de 21 pruebas para los 6 pasos de Backend On-Ramp (del 0 al 5)."""
 
 import ast
 import sqlite3
@@ -10,12 +10,29 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-import paso00_hola as paso00
-import paso01_http_y_pydantic as paso01
-import paso02_sql_relacional as paso02
-import paso03_depends_y_jwt as paso03
-import paso04_concurrencia as paso04
 from onramp_judge.helpers import run_concurrent_bookings
+
+import importlib
+
+
+class _ModuloDiferido:
+    """Importa el módulo de un paso hasta que un test lo usa.
+
+    Así, un error de sintaxis en un paso solo tumba los tests de ese paso.
+    """
+
+    def __init__(self, nombre: str) -> None:
+        self._nombre = nombre
+
+    def __getattr__(self, atributo: str) -> object:
+        return getattr(importlib.import_module(self._nombre), atributo)
+
+
+paso00 = _ModuloDiferido("paso00_hola")
+paso01 = _ModuloDiferido("paso01_http_y_pydantic")
+paso02 = _ModuloDiferido("paso02_sql_relacional")
+paso03 = _ModuloDiferido("paso03_depends_y_jwt")
+paso04 = _ModuloDiferido("paso04_concurrencia")
 
 STUDENT_TEST_FILE = Path(__file__).parent / "test_paso05_estudiante.py"
 
@@ -247,7 +264,7 @@ def test_paso04_concurrent_booking_multiple_rooms_stays_consistent() -> None:
     assert res_b == (1, 1)
 
 
-# --- PASO 5: Pruebas automatizadas desde cero con pytest (2 pruebas) ---
+# --- PASO 5: Pruebas automatizadas desde cero con pytest (3 pruebas) ---
 
 
 def _count_student_tests() -> int:
@@ -259,10 +276,10 @@ def _count_student_tests() -> int:
     )
 
 
-def _run_student_suite(use_buggy: bool) -> subprocess.CompletedProcess[str]:
-    if not use_buggy:
+def _run_student_suite(version: str | None) -> subprocess.CompletedProcess[str]:
+    if version is None:
         return subprocess.run(
-            [sys.executable, "-m", "pytest", "-q", str(STUDENT_TEST_FILE)],
+            [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", str(STUDENT_TEST_FILE)],
             check=False,
             capture_output=True,
             text=True,
@@ -270,8 +287,9 @@ def _run_student_suite(use_buggy: bool) -> subprocess.CompletedProcess[str]:
 
     runner = (
         "import paso05_pruebas, pytest; "
-        "paso05_pruebas.calculate_late_fee = paso05_pruebas.calculate_late_fee_buggy; "
-        f"raise SystemExit(pytest.main(['-q', {str(STUDENT_TEST_FILE)!r}]))"
+        "from onramp_judge.versiones_con_bug import VERSIONES; "
+        f"paso05_pruebas.calculate_late_fee = VERSIONES[{version!r}]; "
+        f"raise SystemExit(pytest.main(['-q', '-p', 'no:cacheprovider', {str(STUDENT_TEST_FILE)!r}]))"
     )
     return subprocess.run(
         [sys.executable, "-c", runner],
@@ -285,23 +303,25 @@ def test_paso05_student_tests_pass_on_healthy_function() -> None:
     assert _count_student_tests() >= 3, (
         "Escribe al menos 3 funciones test_* en tests/test_paso05_estudiante.py."
     )
-    healthy = _run_student_suite(use_buggy=False)
+    healthy = _run_student_suite(None)
     assert healthy.returncode == 0, (
         "Tus pruebas en tests/test_paso05_estudiante.py deben pasar con calculate_late_fee:\n"
         f"{healthy.stdout}\n{healthy.stderr}"
     )
 
 
-def test_paso05_student_tests_fail_on_buggy_function() -> None:
-    healthy = _run_student_suite(use_buggy=False)
+@pytest.mark.parametrize("version", ["version_a", "version_b"])
+def test_paso05_student_tests_fail_on_each_buggy_version(version: str) -> None:
+    healthy = _run_student_suite(None)
     assert healthy.returncode == 0, (
-        "Primero haz que tus pruebas pasen con la función sana calculate_late_fee."
+        "Primero haz que tus pruebas pasen con la función correcta calculate_late_fee."
     )
 
-    buggy = _run_student_suite(use_buggy=True)
+    buggy = _run_student_suite(version)
     assert buggy.returncode == 1, (
-        "Al sustituir calculate_late_fee por calculate_late_fee_buggy, al menos una prueba "
-        "debe fallar (código 1) para demostrar que detecta el bug:\n"
+        f"Con la {version.replace('_', ' ')} en lugar de calculate_late_fee, todas tus pruebas "
+        "siguen en verde, así que no detectan ese bug. Compara las dos con "
+        "`uv run onramp inspect --paso 5` y agrega un caso donde den resultados distintos.\n"
         f"{buggy.stdout}\n{buggy.stderr}"
     )
 

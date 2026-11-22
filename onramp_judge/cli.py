@@ -154,7 +154,8 @@ def _inspect_paso03() -> None:
     try:
         member_token = paso03.create_access_token("ana", "member")
         librarian_token = paso03.create_access_token("carlos", "librarian")
-        print(f"  Token de ejemplo (member): {member_token[:36]}...")
+        print("  Token de ejemplo (member), cópialo completo y pégalo en https://jwt.io:")
+        print(f"  {member_token}")
         try:
             decoded = paso03.decode_jwt_payload_unverified(member_token)
             print(f"  Payload decodificado sin clave secreta: {decoded}")
@@ -206,13 +207,16 @@ def _inspect_paso04() -> None:
 
 def _inspect_paso05() -> None:
     import paso05_pruebas as paso05
+    from onramp_judge.versiones_con_bug import VERSIONES
 
     print("=== PASO 5: Pruebas automatizadas desde cero con pytest ===")
     try:
-        for days in (4, 1, 0, -2):
+        print("  days_late | correcta | versión A | versión B")
+        for days in (5, 4, 2, 1, 0, -1, -3):
             healthy = paso05.calculate_late_fee(days)
-            buggy = paso05.calculate_late_fee_buggy(days)
-            print(f"  days_late={days:>2} -> sana: {healthy:>6} | con bug: {buggy:>6}")
+            a = VERSIONES["version_a"](days)
+            b = VERSIONES["version_b"](days)
+            print(f"  {days:>9} | {healthy!s:>8} | {a!s:>9} | {b!s:>9}")
         completed = subprocess.run(
             [sys.executable, "-m", "pytest", "-q", "tests/test_paso05_estudiante.py"],
             check=False,

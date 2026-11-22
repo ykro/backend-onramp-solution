@@ -2,7 +2,7 @@
 
 ![Paso 2. Tu primera base de datos relacional con SQLite](diagrams/esquema-y-indice.svg)
 
-Este paso toma unos 35 minutos.
+Este paso toma unos 50 minutos.
 
 ## Antes de empezar
 
@@ -12,7 +12,7 @@ Este paso toma unos 35 minutos.
 
 ## Por qué importa
 
-En la Unidad 2 del curso trabajarás con SQLModel sobre una base de datos real. Antes de usar un ORM conviene ver qué hace la base de datos por debajo, con [sqlite3](https://docs.python.org/3/library/sqlite3.html), que ya viene con Python y no necesita instalar nada. En este paso ves cuatro ideas que el ORM da por sabidas, la llave foránea, el `JOIN`, la paginación con parámetros y el índice.
+En la Unidad 2 del curso trabajarás con SQLModel, un ORM (una librería que convierte clases de Python en tablas y genera el SQL por ti), sobre una base de datos real. Antes de usarlo conviene ver qué hace la base de datos por debajo, con [sqlite3](https://docs.python.org/3/library/sqlite3.html), que ya viene con Python y no necesita instalar nada. En este paso ves cuatro ideas que el ORM da por sabidas, la llave foránea, el `JOIN`, la paginación con parámetros y el índice.
 
 ## Lo mínimo que necesitas saber
 

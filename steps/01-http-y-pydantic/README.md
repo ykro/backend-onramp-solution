@@ -2,7 +2,7 @@
 
 ![Paso 1. Códigos HTTP, estado aislado y validación con Pydantic](diagrams/flujo-http-pydantic.svg)
 
-Este paso toma unos 30 minutos.
+Este paso toma unos 40 minutos.
 
 ## Antes de empezar
 
