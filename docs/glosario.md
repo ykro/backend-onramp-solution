@@ -16,7 +16,7 @@ Códigos numéricos de tres dígitos que el servidor devuelve en cada respuesta 
 
 ## Pydantic (`BaseModel`, `Field` y `ConfigDict`)
 
-Biblioteca de validación de datos que FastAPI usa para revisar cada petición antes de ejecutar tu función. Con [`ConfigDict(extra="forbid")`](https://docs.pydantic.dev/latest/api/config/) rechazas campos que el cliente no debería enviar, y con [`Field`](https://docs.pydantic.dev/latest/concepts/fields/) fijas límites como longitud mínima (`min_length`) o precios mayores que cero (`gt`).
+Biblioteca de validación de datos que FastAPI usa para revisar cada petición antes de ejecutar tu función. Con [`ConfigDict`](https://docs.pydantic.dev/latest/api/config/) configuras el modelo completo, por ejemplo qué hacer con campos que el cliente no debería enviar, y con [`Field`](https://docs.pydantic.dev/latest/concepts/fields/) fijas límites a cada campo, como su longitud o su valor mínimo.
 
 ## `Decimal`
 
@@ -24,11 +24,11 @@ Tipo numérico de la biblioteca estándar de Python para operar en base 10 con e
 
 ## `PRAGMA foreign_keys`
 
-Instrucción de SQLite que activa la verificación de llaves foráneas en la conexión actual, según [SQLite Foreign Key Support](https://www.sqlite.org/foreignkeys.html). SQLite desactiva esta verificación por defecto al abrir cada conexión; al ejecutar `PRAGMA foreign_keys = ON`, la base de datos lanza `sqlite3.IntegrityError` si intentas guardar un libro con un `author_id` que no existe.
+Instrucción de SQLite que activa la verificación de llaves foráneas en la conexión actual, según [SQLite Foreign Key Support](https://www.sqlite.org/foreignkeys.html). SQLite desactiva esta verificación por defecto al abrir cada conexión. Con la verificación activa, la base de datos lanza `sqlite3.IntegrityError` si intentas guardar un libro con un `author_id` que no existe.
 
 ## `INNER JOIN`
 
-Cláusula SQL que combina filas de dos tablas cuando coinciden en una columna relacionada, documentada en [SQLite `SELECT` y `JOIN`](https://www.sqlite.org/lang_select.html#fromclause). En el Paso 2 une `books` con `authors` usando `ON a.id = b.author_id` para devolver cada libro junto con el nombre de su autor en una sola consulta.
+Cláusula SQL que combina filas de dos tablas cuando coinciden en una columna relacionada, documentada en [SQLite `SELECT` y `JOIN`](https://www.sqlite.org/lang_select.html#fromclause). En el Paso 2 une `books` con `authors` para devolver cada libro junto con el nombre de su autor en una sola consulta.
 
 ## `EXPLAIN QUERY PLAN`
 
@@ -36,7 +36,7 @@ Comando de SQLite que muestra cómo ejecutará una consulta sin devolver sus fil
 
 ## `Depends` y `dependency_overrides`
 
-Mecanismo de inyección de dependencias de FastAPI documentado en [FastAPI Dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/) y [Testing Dependencies](https://fastapi.tiangolo.com/advanced/testing-dependencies/). Al declarar `repo: Annotated[RoomRepository, Depends(get_room_repo)]`, una ruta recibe su repositorio desde afuera en lugar de leer una variable global, lo que permite reemplazarlo por un repositorio aislado en pruebas con `app.dependency_overrides`.
+Mecanismo de inyección de dependencias de FastAPI documentado en [FastAPI Dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/) y [Testing Dependencies](https://fastapi.tiangolo.com/advanced/testing-dependencies/). Al declarar un parámetro con `Annotated[Tipo, Depends(funcion)]`, una ruta recibe su dependencia desde afuera en lugar de leer una variable global, lo que permite reemplazarlo por un repositorio aislado en pruebas con `app.dependency_overrides`.
 
 ## JWT y `Base64Url`
 
@@ -52,7 +52,7 @@ Defecto de concurrencia donde el resultado cambia según el orden en que se inte
 
 ## `threading.Lock`
 
-Candado de exclusión mutua de la biblioteca estándar de Python, documentado en [Python `threading.Lock`](https://docs.python.org/3/library/threading.html#lock-objects). Al envolver la sección crítica dentro de `with self._lock:`, garantizas que solo un hilo a la vez verifique la disponibilidad y guarde la reserva.
+Candado de exclusión mutua de la biblioteca estándar de Python, documentado en [Python `threading.Lock`](https://docs.python.org/3/library/threading.html#lock-objects). Al envolver la sección crítica en un bloque `with` sobre el candado, garantizas que solo un hilo a la vez verifique la disponibilidad y guarde la reserva.
 
 ## `pytest` y patrón Arrange -> Act -> Assert
 

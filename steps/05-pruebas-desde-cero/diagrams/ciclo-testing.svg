@@ -45,14 +45,14 @@
   <line x1="460" y1="160" x2="670" y2="196" stroke="#DC2626" stroke-width="1.8" marker-end="url(#arrow-fail)"/>
 
   <rect x="32" y="202" width="414" height="86" rx="10" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1.5"/>
-  <text x="50" y="228" fill="#065F46" font-size="12.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">VERDE ante calculate_late_fee (sana)</text>
+  <text x="50" y="228" fill="#065F46" font-size="12.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">VERDE ante la calculate_late_fee correcta</text>
   <text x="50" y="250" fill="#047857" font-size="11.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Todas tus pruebas pasan (código de salida 0):</text>
-  <text x="50" y="270" fill="#047857" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">days=4 -&gt; 10.00 · days=0 -&gt; 0.00 · days=-3 -&gt; 0.00</text>
+  <text x="50" y="270" fill="#047857" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Cada assert coincide con la regla de negocio</text>
 
   <rect x="474" y="202" width="414" height="86" rx="10" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5"/>
   <text x="492" y="228" fill="#991B1B" font-size="12.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ROJO ante cada versión con un bug</text>
-  <text x="492" y="250" fill="#B91C1C" font-size="11.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Al sustituir la función por la versión A o la B, falla (código 1):</text>
-  <text x="492" y="270" fill="#B91C1C" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">days=4 -&gt; 7.50 · days=0 -&gt; -2.50 (detectado)</text>
+  <text x="492" y="250" fill="#B91C1C" font-size="11.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Al sustituir la función por la versión A o la B, falla (código 1).</text>
+  <text x="492" y="270" fill="#B91C1C" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Al menos un assert de tu suite detecta cada versión</text>
 
   <text x="32" y="312" fill="#64748B" font-size="11" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Verifica solo este paso con: uv run onramp inspect --paso 5 y uv run onramp check --paso 5</text>
 </svg>

@@ -16,8 +16,8 @@
 
   <!-- Bloque Depends -->
   <rect x="32" y="54" width="856" height="82" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-  <text x="50" y="78" fill="#1D4ED8" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">1. GET /rooms → repo: Annotated[RoomRepository, Depends(get_room_repo)]</text>
-  <text x="50" y="102" fill="#475569" font-size="11.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">En ejecución normal usa _default_repo; en pruebas, app.dependency_overrides[get_room_repo] inyecta un repositorio aislado.</text>
+  <text x="50" y="78" fill="#1D4ED8" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">1. GET /rooms → recibe el repositorio como parámetro, no lo lee de una global</text>
+  <text x="50" y="102" fill="#475569" font-size="11.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">En ejecución normal FastAPI entrega el repositorio de siempre; en pruebas, dependency_overrides entrega uno aislado.</text>
   <text x="50" y="122" fill="#64748B" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">JWT: header.payload.signature  (payload = Base64Url legible sin clave secreta)</text>
 
   <!-- Bloque JWT -->
@@ -39,7 +39,7 @@
   <line x1="232" y1="256" x2="292" y2="262" stroke="#2563EB" stroke-width="1.8" marker-end="url(#arrow-b)"/>
   <rect x="298" y="242" width="184" height="44" rx="8" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.2"/>
   <text x="390" y="261" fill="#1E40AF" font-size="11.5" font-weight="700" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" text-anchor="middle">Token válido: revisar rol</text>
-  <text x="390" y="277" fill="#1D4ED8" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">claims["role"] == "librarian"</text>
+  <text x="390" y="277" fill="#1D4ED8" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">¿El rol puede crear salas?</text>
 
   <!-- 403 -->
   <line x1="486" y1="250" x2="564" y2="216" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-s)"/>

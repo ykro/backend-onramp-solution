@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 940 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="p1-title p1-desc">
   <title id="p1-title">Paso 1: Contratos HTTP/1.1, validación Pydantic y estado aislado</title>
-  <desc id="p1-desc">Flujo de peticiones HTTP hacia FastAPI pasando por la validación estricta de BookCreate (extra='forbid', título no vacío y Decimal) y el estado aislado por instancia, respondiendo 201 Created, 204 No Content, 404 Not Found o 422 Unprocessable Entity.</desc>
+  <desc id="p1-desc">Flujo de peticiones HTTP hacia FastAPI pasando por la validación estricta de BookCreate (sin campos extra, título no vacío y precio positivo) y el estado aislado por instancia, respondiendo 201 Created, 204 No Content, 404 Not Found o 422 Unprocessable Entity.</desc>
   <defs>
     <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
       <polygon points="0 0, 8 3, 0 6" fill="#2563EB"/>
@@ -33,9 +33,9 @@
 
   <rect x="258" y="102" width="314" height="82" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
   <text x="272" y="122" fill="#0F172A" font-size="11.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">1. BookCreate (Pydantic)</text>
-  <text x="272" y="142" fill="#475569" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ConfigDict(extra="forbid")</text>
-  <text x="272" y="159" fill="#475569" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">title: min_length=1, max_length=120</text>
-  <text x="272" y="176" fill="#475569" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">price: Decimal (gt=0, decimal_places=2)</text>
+  <text x="272" y="142" fill="#475569" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Rechaza campos que no declaraste</text>
+  <text x="272" y="159" fill="#475569" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">title: no vacío, máximo 120 caracteres</text>
+  <text x="272" y="176" fill="#475569" font-size="10.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">price: Decimal mayor que 0, dos decimales</text>
 
   <rect x="258" y="196" width="314" height="74" rx="8" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
   <text x="272" y="218" fill="#1E40AF" font-size="11.5" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">2. Estado local aislado</text>

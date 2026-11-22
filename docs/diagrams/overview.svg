@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 980 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t d">
   <title id="t">Backend On-Ramp · 6 pasos</title>
-  <desc id="d">Python 3.13 · FastAPI · Pydantic · SQLite · PyJWT · pytest · primera vez: del 0 al 5 en orden. Paso 0: Entorno y servidor; Paso 1: HTTP y Pydantic; Paso 2: SQL relacional; Paso 3: Depends y JWT; Paso 4: Concurrencia; Paso 5: Tests desde cero</desc>
+  <desc id="d">Python 3.13 · FastAPI · Pydantic · SQLite · PyJWT · pytest · primera vez: del 0 al 5 en orden. Paso 0: Entorno y servidor; Paso 1: HTTP y Pydantic; Paso 2: SQL relacional; Paso 3: Depends y JWT; Paso 4: Concurrencia; Paso 5: Tests desde cero. Unas 3.5 horas en total</desc>
   <rect width="980" height="470" fill="#fafaf7"/>
   <g font-family="Inter, Helvetica, Arial, sans-serif">
     <text x="30" y="52" font-size="26" font-weight="700" fill="#1c1917">Backend On-Ramp · 6 pasos</text>
     <text x="30" y="82" font-size="15" fill="#57534e">Python 3.13 · FastAPI · Pydantic · SQLite · PyJWT · pytest · primera vez: del 0 al 5 en orden</text>
     <rect x="30" y="110" width="296" height="130" rx="12" fill="#ffffff" stroke="#d6d3d1"/>
     <rect x="30" y="110" width="6" height="130" rx="3" fill="#b45309"/>
-    <text x="52" y="142" font-size="13" font-weight="700" fill="#b45309">PASO 0 · 25 MIN</text>
+    <text x="52" y="142" font-size="13" font-weight="700" fill="#b45309">PASO 0 · 35 MIN</text>
     <text x="52" y="172" font-size="19" font-weight="700" fill="#1c1917">Entorno y servidor</text>
     <text x="52" y="200" font-size="14" fill="#44403c">uv, uvicorn, /docs y curl</text>
     <text x="52" y="220" font-size="14" fill="#44403c">paso00_hola.py</text>
     <rect x="348" y="110" width="296" height="130" rx="12" fill="#ffffff" stroke="#d6d3d1"/>
     <rect x="348" y="110" width="6" height="130" rx="3" fill="#1d4ed8"/>
-    <text x="370" y="142" font-size="13" font-weight="700" fill="#1d4ed8">PASO 1 · 30 MIN</text>
+    <text x="370" y="142" font-size="13" font-weight="700" fill="#1d4ed8">PASO 1 · 40 MIN</text>
     <text x="370" y="172" font-size="19" font-weight="700" fill="#1c1917">HTTP y Pydantic</text>
     <text x="370" y="200" font-size="14" fill="#44403c">201, 204, 404, 422 y Decimal</text>
     <text x="370" y="220" font-size="14" fill="#44403c">paso01_http_y_pydantic.py</text>
     <rect x="666" y="110" width="296" height="130" rx="12" fill="#ffffff" stroke="#d6d3d1"/>
     <rect x="666" y="110" width="6" height="130" rx="3" fill="#1d4ed8"/>
-    <text x="688" y="142" font-size="13" font-weight="700" fill="#1d4ed8">PASO 2 · 35 MIN</text>
+    <text x="688" y="142" font-size="13" font-weight="700" fill="#1d4ed8">PASO 2 · 50 MIN</text>
     <text x="688" y="172" font-size="19" font-weight="700" fill="#1c1917">SQL relacional</text>
     <text x="688" y="200" font-size="14" fill="#44403c">llaves, JOIN, paginación e índice</text>
     <text x="688" y="220" font-size="14" fill="#44403c">paso02_sql_relacional.py</text>
     <rect x="30" y="262" width="296" height="130" rx="12" fill="#ffffff" stroke="#d6d3d1"/>
     <rect x="30" y="262" width="6" height="130" rx="3" fill="#1d4ed8"/>
-    <text x="52" y="294" font-size="13" font-weight="700" fill="#1d4ed8">PASO 3 · 25 MIN</text>
+    <text x="52" y="294" font-size="13" font-weight="700" fill="#1d4ed8">PASO 3 · 40 MIN</text>
     <text x="52" y="324" font-size="19" font-weight="700" fill="#1c1917">Depends y JWT</text>
     <text x="52" y="352" font-size="14" fill="#44403c">dependency_overrides, 401 y 403</text>
     <text x="52" y="372" font-size="14" fill="#44403c">paso03_depends_y_jwt.py</text>
     <rect x="348" y="262" width="296" height="130" rx="12" fill="#ffffff" stroke="#d6d3d1"/>
     <rect x="348" y="262" width="6" height="130" rx="3" fill="#1d4ed8"/>
-    <text x="370" y="294" font-size="13" font-weight="700" fill="#1d4ed8">PASO 4 · 15 MIN</text>
+    <text x="370" y="294" font-size="13" font-weight="700" fill="#1d4ed8">PASO 4 · 25 MIN</text>
     <text x="370" y="324" font-size="19" font-weight="700" fill="#1c1917">Concurrencia</text>
     <text x="370" y="352" font-size="14" fill="#44403c">race condition y threading.Lock</text>
     <text x="370" y="372" font-size="14" fill="#44403c">paso04_concurrencia.py</text>
     <rect x="666" y="262" width="296" height="130" rx="12" fill="#ffffff" stroke="#d6d3d1"/>
     <rect x="666" y="262" width="6" height="130" rx="3" fill="#1d4ed8"/>
-    <text x="688" y="294" font-size="13" font-weight="700" fill="#1d4ed8">PASO 5 · 20 MIN</text>
+    <text x="688" y="294" font-size="13" font-weight="700" fill="#1d4ed8">PASO 5 · 30 MIN</text>
     <text x="688" y="324" font-size="19" font-weight="700" fill="#1c1917">Tests desde cero</text>
-    <text x="688" y="352" font-size="14" fill="#44403c">rojo ante una versión con un bug</text>
+    <text x="688" y="352" font-size="14" fill="#44403c">rojo ante dos versiones con un bug</text>
     <text x="688" y="372" font-size="14" fill="#44403c">tests/test_paso05_estudiante.py</text>
     <text x="30" y="444" font-size="15" fill="#44403c">Ver el estado actual: uv run onramp inspect --paso N   ·   Verificar: uv run onramp check --paso N</text>
   </g>
