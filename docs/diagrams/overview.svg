@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 980 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t d">
   <title id="t">Backend On-Ramp · 6 pasos</title>
-  <desc id="d">Python 3.13 · FastAPI · Pydantic · SQLite · PyJWT · pytest · primera vez: del 0 al 5 en orden. Paso 0: Entorno y servidor; Paso 1: HTTP y Pydantic; Paso 2: SQL relacional; Paso 3: Depends y JWT; Paso 4: Concurrencia; Paso 5: Tests desde cero. Unas 3.5 horas en total</desc>
+  <desc id="d">Python 3.13 · FastAPI · Pydantic · SQLite · PyJWT · pytest · primera vez: del 0 al 5 en orden. Paso 0: Entorno y servidor; Paso 1: HTTP y Pydantic; Paso 2: SQL relacional; Paso 3: Depends y JWT; Paso 4: Concurrencia; Paso 5: Tests desde cero. Unas 4 horas en total</desc>
   <rect width="980" height="470" fill="#fafaf7"/>
   <g font-family="Inter, Helvetica, Arial, sans-serif">
     <text x="30" y="52" font-size="26" font-weight="700" fill="#1c1917">Backend On-Ramp · 6 pasos</text>
@@ -20,7 +20,7 @@
     <text x="370" y="220" font-size="14" fill="#44403c">paso01_http_y_pydantic.py</text>
     <rect x="666" y="110" width="296" height="130" rx="12" fill="#ffffff" stroke="#d6d3d1"/>
     <rect x="666" y="110" width="6" height="130" rx="3" fill="#1d4ed8"/>
-    <text x="688" y="142" font-size="13" font-weight="700" fill="#1d4ed8">PASO 2 · 50 MIN</text>
+    <text x="688" y="142" font-size="13" font-weight="700" fill="#1d4ed8">PASO 2 · 60 MIN</text>
     <text x="688" y="172" font-size="19" font-weight="700" fill="#1c1917">SQL relacional</text>
     <text x="688" y="200" font-size="14" fill="#44403c">llaves, JOIN, paginación e índice</text>
     <text x="688" y="220" font-size="14" fill="#44403c">paso02_sql_relacional.py</text>

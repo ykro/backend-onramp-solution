@@ -13,7 +13,7 @@ Este repositorio contiene la solución verificada de [Backend On-Ramp](https://g
 | Paso 2 | `CA-2.1` a `CA-2.4` | `PRAGMA foreign_keys = ON` enciende la verificación que SQLite trae apagada. El `INNER JOIN` trae el nombre del autor en una sola consulta. La paginación pasa `limit`, `offset` y el filtro como parámetros `?`, así el texto del usuario nunca se interpreta como SQL. El índice cambia `SCAN` por `SEARCH`. | [paso02_sql_relacional.py](paso02_sql_relacional.py) |
 | Paso 3 | `CA-3.1` a `CA-3.3` | `GET /rooms` recibe el repositorio con `Depends`, así los tests lo reemplazan con `dependency_overrides`. El bloque central del JWT se lee con Base64Url agregando el relleno `=`, porque solo está codificado. Un rol sin permiso recibe `403`, ya que la identidad sí se verificó. | [paso03_depends_y_jwt.py](paso03_depends_y_jwt.py) |
 | Paso 4 | `CA-4.1`, `CA-4.2` | Un `threading.Lock` compartido envuelve la revisión y la escritura de `reserve`, que forman la sección crítica; si solo envolviera la escritura, dos hilos podrían pasar la revisión a la vez. | [paso04_concurrencia.py](paso04_concurrencia.py) |
-| Paso 5 | `CA-5.1` a `CA-5.3` | Tres tests con Arrange, Act, Assert. El edge case usa `0` y `-3`; solo el negativo detecta la versión A, que cobra montos negativos. El primer día de atraso detecta la versión B, que cobra un día menos y devuelve `0.00`. | [tests/test_paso05_estudiante.py](tests/test_paso05_estudiante.py) |
+| Paso 5 | `CA-5.1` a `CA-5.3` | Tres tests con Arrange, Act, Assert. El edge case usa `0` y `-3`; solo el negativo detecta la versión A, que cobra montos negativos. Cualquier atraso positivo (incluido el primer día, donde devuelve `0.00`) detecta la versión B, que cobra un día menos. | [tests/test_paso05_estudiante.py](tests/test_paso05_estudiante.py) |
 
 ## Los 6 pasos
 
@@ -30,7 +30,7 @@ Este repositorio contiene la solución verificada de [Backend On-Ramp](https://g
 
 1. `uv sync` (o `UV_CACHE_DIR=/tmp/uv-cache-onramp uv sync` si la caché global tiene permisos restringidos).
 2. `uv run onramp inspect` o `uv run onramp inspect --paso N` para ver cada paso en vivo.
-3. `uv run onramp check` o `uv run onramp check --paso N` para correr las pruebas.
+3. `uv run onramp check`, `uv run onramp check --paso N` o `uv run onramp check --u1` (ruta corta de la Unidad 1) para correr las pruebas.
 
 ## Repositorios relacionados
 

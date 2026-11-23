@@ -22,6 +22,7 @@ Este paso junta dos ideas que no dependen una de la otra. Puedes resolver primer
 - **Repositorio.** `RoomRepository` es un repositorio, una clase que esconde dónde viven los datos. La ruta solo habla HTTP (recibe JSON, responde códigos) y le pide al repositorio que guarde o busque. Hoy es una lista en memoria; en la Unidad 2 del curso, los repositorios de EstateHub usan SQLModel y las rutas casi no cambian. Separar así las capas es lo que hace posible el reemplazo en los tests.
 - **Codificar no es cifrar.** Base64 convierte bytes en letras y números para que viajen como texto. Cualquiera lo revierte sin clave. Cifrar sí necesita una clave.
 - **Las tres partes de un JWT.** `encabezado.contenido.firma`. Las dos primeras son JSON en Base64Url. La firma la calcula el servidor con su secreto y sirve para detectar si alguien cambió el contenido.
+- **Encabezados HTTP (`Authorization`).** El cliente envía el token en un header HTTP con el formato `Authorization: Bearer <token>`, fuera del cuerpo JSON.
 - **`401` y `403`.** `401` significa "no sé quién eres" (falta el token o es inválido). `403` significa "sé quién eres, pero no tienes permiso".
 
 ## Qué vas a hacer
@@ -50,11 +51,11 @@ uv run onramp inspect --paso 3
 uv run onramp check --paso 3
 ```
 
-Con solo el `TODO 1` pasa `test_paso03_dependency_overrides_isolates_tests`; los otros dos quedan en rojo hasta la U3.
+Con solo el `TODO 1` pasa `test_paso03_dependency_overrides_isolates_tests`; los otros dos quedan en rojo hasta la U3. Si sigues la ruta corta de la Unidad 1, corre `uv run onramp check --u1` para verla en verde.
 
 Si te trabas, abre la [pista 1](hints/1.md). Cada pista da un poco más que la anterior; la pista 3 trae un esqueleto, nunca la respuesta completa.
 
-## Respuestas de autoevaluación
+## Respuestas de autoevaluación («Al terminar»)
 
 1. La firma. El servidor recalcula la firma con su secreto; si alguien cambia el contenido, la firma ya no coincide y `jwt.decode` lanza un error que termina en `401`.
 2. Contraseñas, números de tarjeta o cualquier secreto, porque el contenido viaja solo codificado en Base64Url y cualquiera que tenga el token puede leerlo.

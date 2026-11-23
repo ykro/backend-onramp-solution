@@ -64,15 +64,7 @@ def list_books_with_authors(conn: sqlite3.Connection) -> list[dict[str, object]]
         ORDER BY b.id ASC
         """
     ).fetchall()
-    return [
-        {
-            "id": row["id"],
-            "title": row["title"],
-            "year": row["year"],
-            "author_name": row["author_name"],
-        }
-        for row in rows
-    ]
+    return [dict(row) for row in rows]
 
 
 def list_books_page(
@@ -106,15 +98,7 @@ def list_books_page(
             (limit, offset),
         ).fetchall()
 
-    return [
-        {
-            "id": row["id"],
-            "title": row["title"],
-            "year": row["year"],
-            "author_name": row["author_name"],
-        }
-        for row in rows
-    ]
+    return [dict(row) for row in rows]
 
 
 def explain_books_by_author(conn: sqlite3.Connection, author_id: int) -> list[str]:

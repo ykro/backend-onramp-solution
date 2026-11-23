@@ -79,7 +79,6 @@ def _inspect_paso01() -> None:
             )
         )
 
-
         res_extra = client_a.post(
             "/books",
             json={"title": "Extra", "price": "50.00", "campo_inventado": True},
@@ -205,19 +204,24 @@ def _inspect_paso04() -> None:
     print()
 
 
-def _inspect_paso05() -> None:
+def _inspect_paso05(days: list[int] | None = None) -> None:
     import paso05_pruebas as paso05
     from onramp_judge.versiones_con_bug import VERSIONES
 
     print("=== PASO 5: Pruebas automatizadas desde cero con pytest ===")
     try:
+        sample_days = tuple(days) if days else (5, 2)
         print("  days_late | correcta | versión A | versión B")
-        for days in (5, 2):
-            healthy = paso05.calculate_late_fee(days)
-            a = VERSIONES["version_a"](days)
-            b = VERSIONES["version_b"](days)
-            print(f"  {days:>9} | {healthy!s:>8} | {a!s:>9} | {b!s:>9}")
-        print("  La versión A coincide en estas filas; busca tú dónde falla.")
+        all_match_a = True
+        for d in sample_days:
+            healthy = paso05.calculate_late_fee(d)
+            a = VERSIONES["version_a"](d)
+            b = VERSIONES["version_b"](d)
+            if healthy != a:
+                all_match_a = False
+            print(f"  {d:>9} | {healthy!s:>8} | {a!s:>9} | {b!s:>9}")
+        if all_match_a:
+            print("  La versión A coincide en estas filas; busca tú dónde falla.")
         completed = subprocess.run(
             [sys.executable, "-m", "pytest", "-q", "tests/test_paso05_estudiante.py"],
             check=False,
@@ -241,25 +245,35 @@ _INSPECTORS = {
     5: _inspect_paso05,
 }
 
+_U1_FILTER = "paso00 or paso01 or test_paso03_dependency_overrides_isolates_tests or paso05"
 
-def run_inspect(paso: int | None = None) -> int:
+
+def run_inspect(paso: int | None = None, days: list[int] | None = None) -> int:
     """Ejecuta la inspección en vivo de todos los pasos o de uno específico."""
     warnings.filterwarnings(
         "ignore",
         message="Using `httpx` with `starlette.testclient` is deprecated",
     )
     if paso is not None:
-        _INSPECTORS[paso]()
+        if paso == 5:
+            _inspect_paso05(days=days)
+        else:
+            _INSPECTORS[paso]()
         return 0
     for step_number in sorted(_INSPECTORS):
-        _INSPECTORS[step_number]()
+        if step_number == 5:
+            _inspect_paso05(days=days)
+        else:
+            _INSPECTORS[step_number]()
     return 0
 
 
-def run_check(paso: int | None = None) -> int:
-    """Ejecuta las pruebas deterministas o las pruebas de un paso específico."""
+def run_check(paso: int | None = None, u1: bool = False) -> int:
+    """Ejecuta las pruebas deterministas, las de un paso o las de la ruta corta U1."""
     cmd = [sys.executable, "-m", "pytest", "-v", "--tb=short", "tests/test_onramp.py"]
-    if paso is not None:
+    if u1:
+        cmd.extend(["-k", _U1_FILTER])
+    elif paso is not None:
         cmd.extend(["-k", f"paso0{paso}"])
     completed = subprocess.run(cmd, check=False)
     return int(completed.returncode)
@@ -284,24 +298,37 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Inspecciona únicamente un paso (0 a 5).",
     )
+    inspect_parser.add_argument(
+        "--days",
+        type=int,
+        nargs="+",
+        default=None,
+        help="Días de atraso para la tabla del Paso 5 (por defecto: 5 2).",
+    )
 
     check_parser = subparsers.add_parser(
         "check",
         help="Corre las pruebas deterministas para verificar tus avances.",
     )
-    check_parser.add_argument(
+    check_group = check_parser.add_mutually_exclusive_group()
+    check_group.add_argument(
         "--paso",
         type=int,
         choices=[0, 1, 2, 3, 4, 5],
         default=None,
         help="Verifica únicamente un paso (0 a 5).",
     )
+    check_group.add_argument(
+        "--u1",
+        action="store_true",
+        help="Verifica la ruta corta de la Unidad 1 (pasos 0, 1, 3 TODO 1 y 5).",
+    )
 
     args = parser.parse_args(argv)
     if args.command == "inspect":
-        return run_inspect(paso=args.paso)
+        return run_inspect(paso=args.paso, days=args.days)
     if args.command == "check":
-        return run_check(paso=args.paso)
+        return run_check(paso=args.paso, u1=args.u1)
     return 1
 
 

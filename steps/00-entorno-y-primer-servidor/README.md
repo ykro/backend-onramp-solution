@@ -50,7 +50,7 @@ uv run onramp check --paso 0
 
 Si te trabas, abre la [pista 1](hints/1.md). Cada pista da un poco más que la anterior; la pista 3 trae un esqueleto, nunca la respuesta completa.
 
-## Respuestas de autoevaluación
+## Respuestas de autoevaluación («Al terminar»)
 
 1. `curl` responde que no pudo conectarse (`Connection refused`). Nadie está escuchando en ese puerto, así que no hay servidor que conteste. Un `404` sí es una respuesta, el servidor existe y te dice que esa ruta no.
 2. Devuelve `404`, porque la ruta `/saludo/` no coincide con `/saludo/{nombre}`. FastAPI compara la ruta antes de llamar a tu función y, si no encuentra coincidencia, responde sin ejecutar tu código.

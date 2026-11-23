@@ -1,6 +1,8 @@
 """Suite determinista de 21 pruebas para los 6 pasos de Backend On-Ramp (del 0 al 5)."""
 
 import ast
+import importlib
+import os
 import sqlite3
 import subprocess
 import sys
@@ -13,8 +15,6 @@ import pytest
 from fastapi.testclient import TestClient
 
 from onramp_judge.helpers import run_concurrent_bookings
-
-import importlib
 
 
 class _ModuloDiferido:
@@ -36,7 +36,37 @@ paso02 = _ModuloDiferido("paso02_sql_relacional")
 paso03 = _ModuloDiferido("paso03_depends_y_jwt")
 paso04 = _ModuloDiferido("paso04_concurrencia")
 
-STUDENT_TEST_FILE = Path(__file__).parent / "test_paso05_estudiante.py"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+STUDENT_TEST_FILE = Path(__file__).resolve().parent / "test_paso05_estudiante.py"
+
+
+# --- PASO 0: Entorno y primer servidor (3 pruebas) ---
+
+
+def test_paso00_root_responde_mensaje() -> None:
+    client = TestClient(paso00.app)
+    res = client.get("/")
+    assert res.status_code == 200
+    assert res.json() == {"mensaje": "Hola desde la biblioteca"}
+
+
+def test_paso00_saludo_con_nombre_en_la_ruta() -> None:
+    client = TestClient(paso00.app)
+    res = client.get("/saludo/Ana")
+    assert res.status_code == 200, "CA-0.2: GET /saludo/Ana debe existir y responder 200."
+    assert res.json() == {"saludo": "Hola, Ana"}
+    res_tilde = client.get("/saludo/María José")
+    assert res_tilde.json() == {"saludo": "Hola, María José"}
+
+
+def test_paso00_libros_y_openapi() -> None:
+    client = TestClient(paso00.app)
+    res = client.get("/libros")
+    assert res.status_code == 200, "CA-0.3: GET /libros debe existir y responder 200."
+    assert res.json() == paso00.LIBROS
+    paths = client.get("/openapi.json").json()["paths"]
+    assert "/saludo/{nombre}" in paths and "/libros" in paths
+
 
 # --- PASO 1: Contratos HTTP/1.1, estado aislado y validación Pydantic (6 pruebas) ---
 
@@ -177,17 +207,43 @@ def test_paso02_pagination_with_order_limit_offset_and_params() -> None:
     try:
         paso02.init_db(conn)
         author_id = paso02.add_author(conn, "Augusto Monterroso")
-        paso02.add_book(conn, "Obras completas", 1959, author_id)
-        paso02.add_book(conn, "La oveja negra", 1969, author_id)
-        paso02.add_book(conn, "Lo demás es silencio", 1978, author_id)
         other_id = paso02.add_author(conn, "Miguel Ángel Asturias")
+        # Orden de inserción distinto a ORDER BY title ASC en limit=2, offset=1.
+        paso02.add_book(conn, "Obras completas", 1959, author_id)
         paso02.add_book(conn, "Hombres de maíz", 1949, other_id)
+        paso02.add_book(conn, "Lo demás es silencio", 1978, author_id)
+        paso02.add_book(conn, "La oveja negra", 1969, author_id)
 
+        traced_page: list[str] = []
+        conn.set_trace_callback(
+            lambda sql: (
+                traced_page.append(sql.upper())
+                if sql.lstrip().upper().startswith("SELECT")
+                else None
+            )
+        )
         page = paso02.list_books_page(conn, limit=2, offset=1)
+        conn.set_trace_callback(None)
         assert [row["title"] for row in page] == ["La oveja negra", "Lo demás es silencio"]
+        assert any(
+            "ORDER BY" in sql and "LIMIT" in sql and "OFFSET" in sql for sql in traced_page
+        ), "CA-2.3: list_books_page debe ordenar y paginar en SQL con ORDER BY, LIMIT y OFFSET."
 
+        traced_filter: list[str] = []
+        conn.set_trace_callback(
+            lambda sql: (
+                traced_filter.append(sql.upper())
+                if sql.lstrip().upper().startswith("SELECT")
+                else None
+            )
+        )
         found = paso02.list_books_page(conn, 5, 0, "oveja")
+        conn.set_trace_callback(None)
         assert [row["title"] for row in found] == ["La oveja negra"]
+        assert any(
+            "LIKE" in sql and "ORDER BY" in sql and "LIMIT" in sql and "OFFSET" in sql
+            for sql in traced_filter
+        ), "CA-2.3: list_books_page con title_filter debe filtrar en SQL usando LIKE."
 
         # Un texto malicioso debe tratarse como valor, nunca como instrucción SQL.
         injected = paso02.list_books_page(
@@ -197,6 +253,13 @@ def test_paso02_pagination_with_order_limit_offset_and_params() -> None:
             title_filter="'; DROP TABLE books; --",
         )
         assert injected == []
+        tautology = paso02.list_books_page(
+            conn,
+            limit=5,
+            offset=0,
+            title_filter="' OR '1'='1",
+        )
+        assert tautology == []
         assert len(paso02.list_books_with_authors(conn)) == 4
     finally:
         conn.close()
@@ -209,6 +272,15 @@ def test_paso02_index_changes_query_plan_from_scan_to_search() -> None:
         author_id = paso02.add_author(conn, "Humberto Ak'abal")
         paso02.add_book(conn, "El animalero", 1990, author_id)
 
+        direct_rows = conn.execute(
+            "EXPLAIN QUERY PLAN SELECT id, title FROM books WHERE author_id = ?",
+            (author_id,),
+        ).fetchall()
+        direct_plan = " ".join(str(row[-1]) for row in direct_rows)
+        assert "SEARCH" in direct_plan
+        assert "USING INDEX" in direct_plan
+        assert "SCAN books" not in direct_plan
+
         plan_lines = paso02.explain_books_by_author(conn, author_id)
         plan_text = " ".join(plan_lines)
         assert "SEARCH" in plan_text
@@ -219,6 +291,41 @@ def test_paso02_index_changes_query_plan_from_scan_to_search() -> None:
 
 
 # --- PASO 3: Depends, JWT en Base64Url y 401 vs 403 (3 pruebas) ---
+
+
+def _decode_unverified_uses_jwt_decode() -> bool:
+    """Devuelve True si decode_jwt_payload_unverified llama a jwt.decode."""
+    source = (REPO_ROOT / "paso03_depends_y_jwt.py").read_text(encoding="utf-8")
+    tree = ast.parse(source)
+
+    jwt_modules: set[str] = set()
+    jwt_decode_names: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name == "jwt":
+                    jwt_modules.add(alias.asname or alias.name)
+        elif isinstance(node, ast.ImportFrom) and node.module == "jwt":
+            for alias in node.names:
+                if alias.name == "decode":
+                    jwt_decode_names.add(alias.asname or alias.name)
+
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef) and node.name == "decode_jwt_payload_unverified":
+            for child in ast.walk(node):
+                if not isinstance(child, ast.Call):
+                    continue
+                func = child.func
+                if (
+                    isinstance(func, ast.Attribute)
+                    and func.attr == "decode"
+                    and isinstance(func.value, ast.Name)
+                    and func.value.id in jwt_modules
+                ):
+                    return True
+                if isinstance(func, ast.Name) and func.id in jwt_decode_names:
+                    return True
+    return False
 
 
 def test_paso03_dependency_overrides_isolates_tests() -> None:
@@ -233,8 +340,16 @@ def test_paso03_dependency_overrides_isolates_tests() -> None:
 
 
 def test_paso03_decode_jwt_payload_without_secret() -> None:
+    assert not _decode_unverified_uses_jwt_decode(), (
+        "CA-3.2: decode_jwt_payload_unverified debe decodificar el bloque central con Base64Url "
+        "y json.loads, sin llamar a jwt.decode."
+    )
     # Firmado con otra clave: si la función verifica con JWT_SECRET, falla.
-    token = pyjwt.encode({"sub": "maria", "role": "member"}, "otra-clave-de-otro-servidor-32-bytes!", algorithm="HS256")
+    token = pyjwt.encode(
+        {"sub": "maria", "role": "member"},
+        "otra-clave-de-otro-servidor-32-bytes!",
+        algorithm="HS256",
+    )
     payload = paso03.decode_jwt_payload_unverified(token)
     assert payload["sub"] == "maria"
     assert payload["role"] == "member"
@@ -281,7 +396,9 @@ def test_paso04_concurrent_booking_protected_with_lock() -> None:
     service = paso04.RoomReservationService()
     inicio = time.perf_counter()
     successes, stored = run_concurrent_bookings(service, "sala-a", threads=5, delay_seconds=0.1)
-    assert time.perf_counter() - inicio >= 0.1, "No borres el time.sleep: simula la base de datos lenta."
+    assert time.perf_counter() - inicio >= 0.1, (
+        "No borres el time.sleep: simula la base de datos lenta."
+    )
     assert successes == 1
     assert stored == 1
 
@@ -297,22 +414,54 @@ def test_paso04_concurrent_booking_multiple_rooms_stays_consistent() -> None:
 # --- PASO 5: Pruebas automatizadas desde cero con pytest (3 pruebas) ---
 
 
+def _iter_student_tests(tree: ast.Module) -> list[tuple[str, ast.FunctionDef]]:
+    """Recolecta funciones test_* de nivel superior y métodos test_* en clases Test*."""
+    found: list[tuple[str, ast.FunctionDef]] = []
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"):
+            found.append((node.name, node))
+        elif isinstance(node, ast.ClassDef) and node.name.startswith("Test"):
+            for item in node.body:
+                if isinstance(item, ast.FunctionDef) and item.name.startswith("test_"):
+                    found.append((f"{node.name}.{item.name}", item))
+    return found
+
+
+def _parametrize_case_count(node: ast.FunctionDef) -> int:
+    """Cuenta cuántos casos aporta un test si usa @pytest.mark.parametrize."""
+    total = 1
+    for decorator in node.decorator_list:
+        if not isinstance(decorator, ast.Call):
+            continue
+        func = decorator.func
+        is_parametrize = (isinstance(func, ast.Attribute) and func.attr == "parametrize") or (
+            isinstance(func, ast.Name) and func.id == "parametrize"
+        )
+        if not is_parametrize:
+            continue
+        argvalues = None
+        if len(decorator.args) >= 2:
+            argvalues = decorator.args[1]
+        else:
+            for kw in decorator.keywords:
+                if kw.arg == "argvalues":
+                    argvalues = kw.value
+                    break
+        if isinstance(argvalues, (ast.List, ast.Tuple, ast.Set)):
+            total *= len(argvalues.elts)
+    return total
+
+
 def _count_student_tests() -> int:
     tree = ast.parse(STUDENT_TEST_FILE.read_text(encoding="utf-8"))
-    return sum(
-        1
-        for node in tree.body
-        if isinstance(node, ast.FunctionDef) and node.name.startswith("test_")
-    )
+    return sum(_parametrize_case_count(node) for _, node in _iter_student_tests(tree))
 
 
 def _tests_sin_comprobacion() -> list[str]:
     """Nombres de los test_* que no llaman a calculate_late_fee o no tienen un assert real."""
     tree = ast.parse(STUDENT_TEST_FILE.read_text(encoding="utf-8"))
     debiles = []
-    for node in tree.body:
-        if not (isinstance(node, ast.FunctionDef) and node.name.startswith("test_")):
-            continue
+    for name, node in _iter_student_tests(tree):
         llama = any(
             isinstance(n, ast.Call)
             and (
@@ -327,30 +476,47 @@ def _tests_sin_comprobacion() -> list[str]:
             for n in ast.walk(node)
         )
         if not (llama and comprueba):
-            debiles.append(node.name)
+            debiles.append(name)
     return debiles
 
 
 def _run_student_suite(version: str | None) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    existing_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = (
+        f"{REPO_ROOT}{os.pathsep}{existing_pythonpath}" if existing_pythonpath else str(REPO_ROOT)
+    )
+
     if version is None:
         return subprocess.run(
-            [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", str(STUDENT_TEST_FILE)],
+            [
+                sys.executable,
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                str(STUDENT_TEST_FILE),
+            ],
             check=False,
             capture_output=True,
             text=True,
+            env=env,
         )
 
     runner = (
         "import paso05_pruebas, pytest; "
         "from onramp_judge.versiones_con_bug import VERSIONES; "
         f"paso05_pruebas.calculate_late_fee = VERSIONES[{version!r}]; "
-        f"raise SystemExit(pytest.main(['-q', '-p', 'no:cacheprovider', {str(STUDENT_TEST_FILE)!r}]))"
+        f"raise SystemExit(pytest.main(['-q', '-p', 'no:cacheprovider', "
+        f"{str(STUDENT_TEST_FILE)!r}]))"
     )
     return subprocess.run(
         [sys.executable, "-c", runner],
         check=False,
         capture_output=True,
         text=True,
+        env=env,
     )
 
 
@@ -374,9 +540,7 @@ def test_paso05_student_tests_pass_on_healthy_function() -> None:
 @pytest.mark.parametrize("version", ["version_a", "version_b"])
 def test_paso05_student_tests_fail_on_each_buggy_version(version: str) -> None:
     ok = _run_student_suite(None).returncode == 0
-    assert ok, (
-        "Primero haz que tus pruebas pasen con la función correcta calculate_late_fee."
-    )
+    assert ok, "Primero haz que tus pruebas pasen con la función correcta calculate_late_fee."
 
     buggy = _run_student_suite(version)
     detecta = buggy.returncode == 1
@@ -386,31 +550,3 @@ def test_paso05_student_tests_fail_on_each_buggy_version(version: str) -> None:
         "y agrega un caso donde den resultados distintos.\n"
         f"{buggy.stdout}\n{buggy.stderr}"
     )
-
-
-# --- Paso 0: entorno y primer servidor -------------------------------------------------
-
-
-def test_paso00_root_responde_mensaje() -> None:
-    client = TestClient(paso00.app)
-    res = client.get("/")
-    assert res.status_code == 200
-    assert res.json() == {"mensaje": "Hola desde la biblioteca"}
-
-
-def test_paso00_saludo_con_nombre_en_la_ruta() -> None:
-    client = TestClient(paso00.app)
-    res = client.get("/saludo/Ana")
-    assert res.status_code == 200, "CA-0.2: GET /saludo/Ana debe existir y responder 200."
-    assert res.json() == {"saludo": "Hola, Ana"}
-    res_tilde = client.get("/saludo/María José")
-    assert res_tilde.json() == {"saludo": "Hola, María José"}
-
-
-def test_paso00_libros_y_openapi() -> None:
-    client = TestClient(paso00.app)
-    res = client.get("/libros")
-    assert res.status_code == 200, "CA-0.3: GET /libros debe existir y responder 200."
-    assert res.json() == paso00.LIBROS
-    paths = client.get("/openapi.json").json()["paths"]
-    assert "/saludo/{nombre}" in paths and "/libros" in paths
